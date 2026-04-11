@@ -7,7 +7,7 @@ import Dashboard from "@/pages/dashboard";
 import Ideas from "@/pages/ideas";
 import Bundle from "@/pages/bundle";
 import Scripts from "@/pages/scripts";
-import Saved from "@/pages/saved";
+import Assets from "@/pages/assets";
 import Trending from "@/pages/trending";
 import Winning from "@/pages/winning";
 import DigitalProduct from "@/pages/digital-product";
@@ -22,7 +22,14 @@ import ABTesting from "@/pages/ab-testing";
 import Insights from "@/pages/insights";
 import SavedBundles from "@/pages/saved-bundles";
 import Files from "@/pages/files";
+import Distribute from "@/pages/distribute";
+import Compose from "@/pages/compose";
+import Publish from "@/pages/publish";
+import Schedule from "@/pages/schedule";
+import Performance from "@/pages/performance";
 import Settings from "@/pages/settings";
+import Pricing from "@/pages/pricing";
+import Trust from "@/pages/trust";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +40,8 @@ function Router() {
       <Route path="/ideas" component={Ideas} />
       <Route path="/bundle" component={Bundle} />
       <Route path="/scripts" component={Scripts} />
-      <Route path="/saved" component={Saved} />
+      <Route path="/assets" component={Assets} />
+      <Route path="/saved" component={Assets} />
       <Route path="/trending" component={Trending} />
       <Route path="/winning" component={Winning} />
       <Route path="/digital-product" component={DigitalProduct} />
@@ -48,7 +56,14 @@ function Router() {
       <Route path="/insights" component={Insights} />
       <Route path="/saved-bundles" component={SavedBundles} />
       <Route path="/files" component={Files} />
+      <Route path="/distribute" component={Distribute} />
+      <Route path="/compose" component={Compose} />
+      <Route path="/publish" component={Publish} />
+      <Route path="/schedule" component={Schedule} />
+      <Route path="/performance" component={Performance} />
       <Route path="/settings" component={Settings} />
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/trust" component={Trust} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -9,6 +9,12 @@
 export interface GenerateIdeasBody {
   /** The market niche to generate ideas for */
   niche: string;
+  /** Target audience type */
+  audience?: string;
+  /** Specific pain point to address */
+  painPoint?: string;
+  /** Focus on trending opportunities */
+  trendMode?: boolean;
   /** Number of ideas to generate */
   count?: number;
 }

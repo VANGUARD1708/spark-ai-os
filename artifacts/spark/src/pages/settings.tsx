@@ -2,130 +2,189 @@ import { Layout } from "@/components/layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Zap, Crown, Check, Lock } from "lucide-react";
-
-const freePlanFeatures = [
-  "5 idea generations / day",
-  "3 bundle builds / day",
-  "3 TikTok scripts / day",
-  "Save up to 10 ideas",
-  "Standard AI model",
-];
-
-const proPlanFeatures = [
-  "Unlimited idea generations",
-  "Unlimited bundle builds",
-  "Unlimited TikTok scripts",
-  "Unlimited saved ideas",
-  "Priority AI model (fastest)",
-  "Digital product generator",
-  "Brand builder",
-  "Content planner",
-  "Analytics dashboard",
-  "A/B testing",
-  "AI insights & recommendations",
-];
+import { Zap, Crown, Check, Bell, Key, Moon, LogOut, User, CreditCard, Shield, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { Link } from "wouter";
 
 export default function Settings() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [notifications, setNotifications] = useState({ tips: true, updates: true, promotions: false });
+
   return (
     <Layout>
-      <div className="w-full max-w-4xl space-y-8 animate-in fade-in duration-500">
+      <div className="w-full max-w-3xl space-y-8 animate-in fade-in duration-500">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-          <p className="text-muted-foreground mt-2">Manage your plan and preferences.</p>
+          <p className="text-muted-foreground mt-2">Manage your account, plan, and preferences.</p>
         </div>
 
-        <section className="space-y-4">
+        <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold">Current Plan</h2>
-            <Badge variant="outline" className="text-muted-foreground border-border/60">Free</Badge>
+            <User className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-lg font-semibold">Profile</h2>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="border-border/50 bg-card/50">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-primary" />
-                    Free
-                  </CardTitle>
-                  <Badge className="bg-primary/20 text-primary border-0 hover:bg-primary/20">Current Plan</Badge>
-                </div>
-                <CardDescription className="text-2xl font-bold text-foreground pt-1">$0 / month</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {freePlanFeatures.map((f) => (
-                  <div key={f} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>{f}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="border-primary/40 bg-card/50 relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Crown className="h-5 w-5 text-yellow-400" />
-                    Pro
-                  </CardTitle>
-                  <Badge className="bg-yellow-400/15 text-yellow-400 border-0 hover:bg-yellow-400/15">Most Popular</Badge>
-                </div>
-                <CardDescription className="text-2xl font-bold text-foreground pt-1">
-                  $29 / month
-                  <span className="text-sm font-normal text-muted-foreground ml-2">or $197/year</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {proPlanFeatures.map((f) => (
-                  <div key={f} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-yellow-400 shrink-0" />
-                    <span>{f}</span>
-                  </div>
-                ))}
-                <div className="pt-2">
-                  <Button className="w-full font-semibold" size="sm">
-                    <Crown className="h-4 w-4 mr-2" />
-                    Upgrade to Pro
-                    <Lock className="h-3.5 w-3.5 ml-2 opacity-60" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        <Separator className="border-border/40" />
-
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold">Account</h2>
           <Card className="border-border/50 bg-card/50">
-            <CardContent className="pt-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Authentication</p>
-                  <p className="text-sm text-muted-foreground">Sign in to sync your data and unlock Pro</p>
+            <CardContent className="pt-5 space-y-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Display Name</label>
+                  <Input placeholder="Your name" value={name} onChange={e => setName(e.target.value)} className="bg-background" />
                 </div>
-                <Button variant="outline" size="sm" disabled>
-                  Coming Soon
-                </Button>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Email</label>
+                  <Input placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="bg-background" />
+                </div>
               </div>
-              <Separator className="border-border/30" />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Data Export</p>
-                  <p className="text-sm text-muted-foreground">Download all your ideas and assets</p>
-                </div>
-                <Button variant="outline" size="sm" disabled>
-                  Coming Soon
-                </Button>
+              <div className="flex justify-end">
+                <Button variant="outline" size="sm" disabled>Save Changes (Auth coming)</Button>
               </div>
             </CardContent>
           </Card>
         </section>
+
+        <Separator className="border-border/40" />
+
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-lg font-semibold">Billing & Subscription</h2>
+            <Badge variant="outline" className="text-muted-foreground border-border/60 text-xs">Free Plan</Badge>
+          </div>
+          <Card className="border-border/50 bg-card/50">
+            <CardContent className="pt-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Current Plan: Free</p>
+                  <p className="text-sm text-muted-foreground">5 ideas/day · 3 bundles/day · 3 scripts/day</p>
+                </div>
+                <Link href="/pricing">
+                  <Button size="sm" className="font-semibold">
+                    <Crown className="h-4 w-4 mr-2 text-yellow-400" />
+                    Upgrade to Pro
+                  </Button>
+                </Link>
+              </div>
+              <Separator className="border-border/30" />
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Billing History</p>
+                  <p className="text-xs text-muted-foreground">Invoices and receipts</p>
+                </div>
+                <Button variant="outline" size="sm" disabled>Coming Soon</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <Separator className="border-border/40" />
+
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Bell className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-lg font-semibold">Notifications</h2>
+          </div>
+          <Card className="border-border/50 bg-card/50">
+            <CardContent className="pt-5 space-y-4">
+              {[
+                { key: "tips" as const, label: "Tips & tutorials", desc: "Weekly tips to help you earn more" },
+                { key: "updates" as const, label: "Product updates", desc: "New features and improvements" },
+                { key: "promotions" as const, label: "Promotions", desc: "Special offers and discounts" },
+              ].map(item => (
+                <div key={item.key} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">{item.label}</p>
+                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+                  </div>
+                  <button
+                    onClick={() => setNotifications(prev => ({ ...prev, [item.key]: !prev[item.key] }))}
+                    className={`h-6 w-11 rounded-full transition-colors relative ${notifications[item.key] ? "bg-primary" : "bg-secondary"}`}
+                  >
+                    <div className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${notifications[item.key] ? "left-5" : "left-0.5"}`} />
+                  </button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </section>
+
+        <Separator className="border-border/40" />
+
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Key className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-lg font-semibold">API Keys</h2>
+            <Badge variant="outline" className="text-muted-foreground border-border/60 text-xs">Pro</Badge>
+          </div>
+          <Card className="border-border/50 bg-card/50">
+            <CardContent className="pt-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Spark API Access</p>
+                  <p className="text-xs text-muted-foreground">Automate Spark with your own integrations</p>
+                </div>
+                <Button variant="outline" size="sm" disabled>Requires Pro</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <Separator className="border-border/40" />
+
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Moon className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-lg font-semibold">Appearance</h2>
+          </div>
+          <Card className="border-border/50 bg-card/50">
+            <CardContent className="pt-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Dark Mode</p>
+                  <p className="text-xs text-muted-foreground">Active — Spark runs in dark mode by default</p>
+                </div>
+                <div className="h-6 w-11 rounded-full bg-primary relative cursor-default">
+                  <div className="absolute top-0.5 left-5 h-5 w-5 rounded-full bg-white shadow" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <Separator className="border-border/40" />
+
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-lg font-semibold">Legal</h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/trust">
+              <Button variant="outline" size="sm" className="gap-2">
+                Privacy Policy <ExternalLink className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
+            <Link href="/trust">
+              <Button variant="outline" size="sm" className="gap-2">
+                Terms of Service <ExternalLink className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
+            <Link href="/trust">
+              <Button variant="outline" size="sm" className="gap-2">
+                Refund Policy <ExternalLink className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        <div className="pt-2">
+          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-2" disabled>
+            <LogOut className="h-4 w-4" />
+            Log Out (Auth coming)
+          </Button>
+        </div>
       </div>
     </Layout>
   );

@@ -10,7 +10,13 @@ export async function generateIdeasHandler(req: Request, res: Response) {
     return res.status(400).json({ error: "Invalid request", details: parsed.error.issues });
   }
 
-  const { niche, count = 5 } = parsed.data;
+  const { niche, audience = "", painPoint = "", trendMode = false, count = 3 } = parsed.data;
+
+  const contextLines = [
+    audience ? `Target audience: ${audience}` : "",
+    painPoint ? `Key pain point to address: ${painPoint}` : "",
+    trendMode ? "Focus on what's currently trending and gaining momentum right now." : "",
+  ].filter(Boolean).join("\n");
 
   try {
     const response = await openai.chat.completions.create({
@@ -26,6 +32,7 @@ You always respond with valid JSON only. No markdown, no explanation.`
         {
           role: "user",
           content: `Generate ${count} specific digital product ideas for the "${niche}" niche.
+${contextLines ? `\nAdditional context:\n${contextLines}` : ""}
 
 For each idea, provide:
 - title: Catchy product name (not generic)
@@ -36,6 +43,7 @@ For each idea, provide:
 - saturationLevel: "low", "medium", or "high"
 - targetAudience: Specific person who buys this
 - problemSolved: The core pain this eliminates
+- whyItSells: 1 sentence explaining the key market insight behind this idea
 
 Respond ONLY with this JSON:
 {
@@ -48,7 +56,8 @@ Respond ONLY with this JSON:
       "profitPotential": "$47-$97",
       "saturationLevel": "low",
       "targetAudience": "...",
-      "problemSolved": "..."
+      "problemSolved": "...",
+      "whyItSells": "..."
     }
   ]
 }`
@@ -61,14 +70,23 @@ Respond ONLY with this JSON:
     try {
       parsed_ideas = JSON.parse(content);
     } catch {
-      return res.status(500).json({ error: "Failed to parse AI response" });
+      const match = content.match(/\{[\s\S]*\}/);
+      parsed_ideas = match ? JSON.parse(match[0]) : { ideas: [] };
     }
 
-    await db.insert(generationStatsTable).values({ type: "idea", niche });
+    try {
+      await db.insert(generationStatsTable).values({
+        type: "ideas",
+        niche
+      });
+    } catch {}
 
-    return res.json({ ideas: parsed_ideas.ideas ?? [], niche });
-  } catch (err) {
-    console.error("Error generating ideas:", err);
+    return res.json({
+      ideas: parsed_ideas.ideas || [],
+      niche
+    });
+  } catch (error) {
+    console.error("Error generating ideas:", error);
     return res.status(500).json({ error: "Failed to generate ideas" });
   }
 }

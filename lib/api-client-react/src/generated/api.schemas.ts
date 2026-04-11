@@ -12,6 +12,12 @@ export interface HealthStatus {
 export interface GenerateIdeasBody {
   /** The market niche to generate ideas for */
   niche: string;
+  /** Target audience type */
+  audience?: string;
+  /** Specific pain point to address */
+  painPoint?: string;
+  /** Focus on trending opportunities */
+  trendMode?: boolean;
   /** Number of ideas to generate */
   count?: number;
 }
@@ -42,6 +48,7 @@ export interface ProductIdea {
   saturationLevel: ProductIdeaSaturationLevel;
   targetAudience: string;
   problemSolved: string;
+  whyItSells: string;
 }
 
 export interface GenerateIdeasResponse {
@@ -119,6 +126,83 @@ export interface TikTokScript {
 export interface GenerateTikTokScriptResponse {
   scripts: TikTokScript[];
   productTitle: string;
+}
+
+/**
+ * Type of hook to generate
+ */
+export type GenerateViralHooksBodyHookType =
+  (typeof GenerateViralHooksBodyHookType)[keyof typeof GenerateViralHooksBodyHookType];
+
+export const GenerateViralHooksBodyHookType = {
+  curiosity: "curiosity",
+  pain: "pain",
+  story: "story",
+  short: "short",
+  all: "all",
+} as const;
+
+export interface GenerateViralHooksBody {
+  /** Product or offer name */
+  productTitle: string;
+  /** Brief description of the product */
+  description?: string;
+  /** Type of hook to generate */
+  hookType?: GenerateViralHooksBodyHookType;
+  /** Number of hooks per type */
+  count?: number;
+}
+
+export interface ViralHook {
+  /** The hook text */
+  text: string;
+  /** Hook type (curiosity, pain, story, short) */
+  type: string;
+  /** Psychological angle used */
+  angle: string;
+}
+
+export interface GenerateViralHooksResponse {
+  hooks: ViralHook[];
+  productTitle: string;
+}
+
+export type GenerateBrandBodyTonePreference =
+  (typeof GenerateBrandBodyTonePreference)[keyof typeof GenerateBrandBodyTonePreference];
+
+export const GenerateBrandBodyTonePreference = {
+  bold: "bold",
+  friendly: "friendly",
+  premium: "premium",
+  playful: "playful",
+  professional: "professional",
+} as const;
+
+export interface GenerateBrandBody {
+  /** Market niche or product category */
+  niche: string;
+  /** Brief description of the product or service */
+  productConcept: string;
+  /** Who the brand is for */
+  targetAudience?: string;
+  tonePreference?: GenerateBrandBodyTonePreference;
+}
+
+export interface BrandColor {
+  name: string;
+  hex: string;
+  usage: string;
+}
+
+export interface GenerateBrandResponse {
+  brandName: string;
+  slogan: string;
+  tagline: string;
+  toneDescription: string;
+  brandVoice: string;
+  targetPersona: string;
+  colors: BrandColor[];
+  namingRationale: string;
 }
 
 export interface SaveIdeaBody {

@@ -1,0 +1,321 @@
+🧭 DASHBOARD
+
+Add:
+	•	Quick Actions
+	•	Recent Activity
+	•	Daily Recommendations
+	•	Progress Checklist
+	•	Revenue Stats
+	•	Upgrade CTA
+
+⸻
+
+💡 RESEARCH
+
+Idea Generator
+
+Add:
+	•	Niche selector
+	•	Audience selector
+	•	Pain-point selector
+	•	Trend mode
+	•	Generate 3 ideas
+	•	Save / Copy / Regenerate
+
+Output:
+	•	Demand score
+	•	Competition score
+	•	Why it sells
+	•	Target audience
+
+⸻
+
+Trending Products
+
+Add:
+	•	Trending list
+	•	Search
+	•	Filters
+	•	Use this idea
+	•	Save trend
+
+⸻
+
+🧩 BUILD
+
+Bundle Builder
+
+Add:
+	•	Product input
+	•	Bonus generator
+	•	Price calculator
+	•	Profit calculator
+	•	Offer angle selector
+	•	Save / Copy
+
+Output:
+	•	Bundle name
+	•	Offer stack
+	•	Final price
+
+⸻
+
+Digital Product Generator
+
+Add:
+	•	PDF Guide generator
+	•	Checklist generator
+	•	Ebook generator
+	•	Download PDF
+	•	Save file
+
+⸻
+
+Brand Builder
+
+Add:
+	•	Brand name generator
+	•	Slogan
+	•	Colors
+	•	Tone
+	•	Apply to store
+
+⸻
+
+🛍 SELL
+
+Storefronts
+
+Add:
+	•	Import from Spark
+	•	Auto product page
+	•	Theme selector
+	•	Preview
+	•	Publish
+	•	Custom domain
+
+⸻
+
+Products
+
+Add:
+	•	Product list
+	•	Search
+	•	Edit
+	•	Duplicate
+	•	Inventory
+	•	Product analytics
+
+⸻
+
+Orders
+
+Add:
+	•	Orders table
+	•	Filters
+	•	Tracking
+	•	Customer info
+	•	Export CSV
+	•	Refund action
+
+⸻
+
+📱 GROW
+
+TikTok Scripts
+
+Add:
+	•	Hook generator
+	•	Story angle
+	•	Problem angle
+	•	Transformation angle
+	•	3 script versions
+	•	Caption
+	•	CTA
+	•	Save / Copy
+
+⸻
+
+Content Planner
+
+Add:
+	•	7-day calendar
+	•	Daily ideas
+	•	Reminders
+	•	Content streak
+
+⸻
+
+Viral Hooks
+
+Add:
+	•	Curiosity hooks
+	•	Pain hooks
+	•	Story hooks
+	•	Short hooks
+	•	Copy button
+
+⸻
+
+📤 DISTRIBUTION HUB
+
+Connected Accounts
+
+Add:
+	•	Connect TikTok
+	•	Connect Facebook
+	•	Connect Instagram
+	•	Connect WhatsApp
+	•	Connect Storefront
+
+⸻
+
+Publish Composer
+
+Add:
+	•	Auto-fill title
+	•	Auto-fill description
+	•	Auto-fill caption
+	•	Auto-fill price
+	•	Add media
+	•	CTA link
+
+⸻
+
+Multi-Channel Publish
+
+Add:
+	•	Select TikTok
+	•	Select Facebook
+	•	Select Marketplace
+	•	Select Instagram
+	•	Select WhatsApp
+
+Button:
+	•	Publish Everywhere
+
+⸻
+
+Scheduling
+
+Add:
+	•	Post now
+	•	Schedule later
+	•	Best time suggestion
+
+⸻
+
+Performance
+
+Add:
+	•	Views
+	•	Clicks
+	•	Orders
+	•	Best channel
+	•	Best campaign
+
+⸻
+
+📊 OPTIMIZE
+
+Analytics
+
+Add:
+	•	Revenue
+	•	Orders
+	•	Conversion rate
+	•	Top product
+	•	Top content
+	•	Growth chart
+
+⸻
+
+Insights
+
+Add:
+	•	Trending alerts
+	•	Low conversion alerts
+	•	Product suggestions
+	•	Content suggestions
+	•	Growth tips
+
+⸻
+
+A/B Testing
+
+Add:
+	•	Headline test
+	•	Price test
+	•	CTA test
+	•	Winner results
+
+⸻
+
+💾 ASSETS
+
+Add:
+	•	Saved Ideas
+	•	Saved Bundles
+	•	Saved Scripts
+	•	Files
+	•	Search assets
+	•	Delete assets
+
+⸻
+
+👤 SETTINGS
+
+Add:
+	•	Profile
+	•	Billing
+	•	Subscription
+	•	Notifications
+	•	API keys
+	•	Dark mode
+	•	Logout
+
+⸻
+
+💰 PRICING
+
+Add:
+	•	Free plan
+	•	Pro plan
+	•	Unlimited generations
+	•	Premium tools
+	•	Upgrade button
+
+⸻
+
+🔐 TRUST
+
+Add:
+	•	Privacy policy
+	•	Terms
+	•	Refund policy
+	•	Contact support
+	•	Secure badges
+
+⸻
+
+📱 MOBILE UPGRADES
+
+Add:
+	•	Better sidebar spacing
+	•	Blur overlay
+	•	Close button
+	•	Larger tap targets
+	•	Sticky CTA
+	•	No horizontal scroll
+
+⸻
+
+🔁 CONNECT FLOW
+
+Buttons Between Modules:
+	•	Use Idea → Bundle Builder
+	•	Bundle → Digital Product
+	•	Bundle → Scripts
+	•	Scripts → Distribution Hub
+	•	Publish → Analytics
+	•	Analytics → Insights

@@ -19,12 +19,16 @@ import type {
 import type {
   DashboardStats,
   DeleteResponse,
+  GenerateBrandBody,
+  GenerateBrandResponse,
   GenerateBundleBody,
   GenerateBundleResponse,
   GenerateIdeasBody,
   GenerateIdeasResponse,
   GenerateTikTokScriptBody,
   GenerateTikTokScriptResponse,
+  GenerateViralHooksBody,
+  GenerateViralHooksResponse,
   HealthStatus,
   SaveIdeaBody,
   SavedIdea,
@@ -378,6 +382,180 @@ export const useGenerateTikTokScript = <
   TContext
 > => {
   return useMutation(getGenerateTikTokScriptMutationOptions(options));
+};
+
+/**
+ * Generate attention-grabbing hooks for social media content
+ * @summary Generate viral hooks
+ */
+export const getGenerateViralHooksUrl = () => {
+  return `/api/spark/generate-viral-hooks`;
+};
+
+export const generateViralHooks = async (
+  generateViralHooksBody: GenerateViralHooksBody,
+  options?: RequestInit,
+): Promise<GenerateViralHooksResponse> => {
+  return customFetch<GenerateViralHooksResponse>(getGenerateViralHooksUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(generateViralHooksBody),
+  });
+};
+
+export const getGenerateViralHooksMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof generateViralHooks>>,
+    TError,
+    { data: BodyType<GenerateViralHooksBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof generateViralHooks>>,
+  TError,
+  { data: BodyType<GenerateViralHooksBody> },
+  TContext
+> => {
+  const mutationKey = ["generateViralHooks"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof generateViralHooks>>,
+    { data: BodyType<GenerateViralHooksBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return generateViralHooks(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type GenerateViralHooksMutationResult = NonNullable<
+  Awaited<ReturnType<typeof generateViralHooks>>
+>;
+export type GenerateViralHooksMutationBody = BodyType<GenerateViralHooksBody>;
+export type GenerateViralHooksMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Generate viral hooks
+ */
+export const useGenerateViralHooks = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof generateViralHooks>>,
+    TError,
+    { data: BodyType<GenerateViralHooksBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof generateViralHooks>>,
+  TError,
+  { data: BodyType<GenerateViralHooksBody> },
+  TContext
+> => {
+  return useMutation(getGenerateViralHooksMutationOptions(options));
+};
+
+/**
+ * Generate a complete brand identity from a niche and product concept
+ * @summary Generate brand identity
+ */
+export const getGenerateBrandUrl = () => {
+  return `/api/spark/generate-brand`;
+};
+
+export const generateBrand = async (
+  generateBrandBody: GenerateBrandBody,
+  options?: RequestInit,
+): Promise<GenerateBrandResponse> => {
+  return customFetch<GenerateBrandResponse>(getGenerateBrandUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(generateBrandBody),
+  });
+};
+
+export const getGenerateBrandMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof generateBrand>>,
+    TError,
+    { data: BodyType<GenerateBrandBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof generateBrand>>,
+  TError,
+  { data: BodyType<GenerateBrandBody> },
+  TContext
+> => {
+  const mutationKey = ["generateBrand"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof generateBrand>>,
+    { data: BodyType<GenerateBrandBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return generateBrand(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type GenerateBrandMutationResult = NonNullable<
+  Awaited<ReturnType<typeof generateBrand>>
+>;
+export type GenerateBrandMutationBody = BodyType<GenerateBrandBody>;
+export type GenerateBrandMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Generate brand identity
+ */
+export const useGenerateBrand = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof generateBrand>>,
+    TError,
+    { data: BodyType<GenerateBrandBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof generateBrand>>,
+  TError,
+  { data: BodyType<GenerateBrandBody> },
+  TContext
+> => {
+  return useMutation(getGenerateBrandMutationOptions(options));
 };
 
 /**

@@ -19,10 +19,17 @@ export const HealthCheckResponse = zod.object({
  * Generate AI-powered product ideas based on niche input
  * @summary Generate product ideas
  */
-export const generateIdeasBodyCountDefault = 5;
+export const generateIdeasBodyTrendModeDefault = false;
+export const generateIdeasBodyCountDefault = 3;
 
 export const GenerateIdeasBody = zod.object({
   niche: zod.string().describe("The market niche to generate ideas for"),
+  audience: zod.string().optional().describe("Target audience type"),
+  painPoint: zod.string().optional().describe("Specific pain point to address"),
+  trendMode: zod
+    .boolean()
+    .default(generateIdeasBodyTrendModeDefault)
+    .describe("Focus on trending opportunities"),
   count: zod
     .number()
     .default(generateIdeasBodyCountDefault)
@@ -52,6 +59,7 @@ export const GenerateIdeasResponse = zod.object({
       saturationLevel: zod.enum(["low", "medium", "high"]),
       targetAudience: zod.string(),
       problemSolved: zod.string(),
+      whyItSells: zod.string(),
     }),
   ),
   niche: zod.string(),
@@ -124,6 +132,74 @@ export const GenerateTikTokScriptResponse = zod.object({
     }),
   ),
   productTitle: zod.string(),
+});
+
+/**
+ * Generate attention-grabbing hooks for social media content
+ * @summary Generate viral hooks
+ */
+export const generateViralHooksBodyHookTypeDefault = `all`;
+export const generateViralHooksBodyCountDefault = 5;
+
+export const GenerateViralHooksBody = zod.object({
+  productTitle: zod.string().describe("Product or offer name"),
+  description: zod
+    .string()
+    .optional()
+    .describe("Brief description of the product"),
+  hookType: zod
+    .enum(["curiosity", "pain", "story", "short", "all"])
+    .default(generateViralHooksBodyHookTypeDefault)
+    .describe("Type of hook to generate"),
+  count: zod
+    .number()
+    .default(generateViralHooksBodyCountDefault)
+    .describe("Number of hooks per type"),
+});
+
+export const GenerateViralHooksResponse = zod.object({
+  hooks: zod.array(
+    zod.object({
+      text: zod.string().describe("The hook text"),
+      type: zod.string().describe("Hook type (curiosity, pain, story, short)"),
+      angle: zod.string().describe("Psychological angle used"),
+    }),
+  ),
+  productTitle: zod.string(),
+});
+
+/**
+ * Generate a complete brand identity from a niche and product concept
+ * @summary Generate brand identity
+ */
+export const generateBrandBodyTonePreferenceDefault = `bold`;
+
+export const GenerateBrandBody = zod.object({
+  niche: zod.string().describe("Market niche or product category"),
+  productConcept: zod
+    .string()
+    .describe("Brief description of the product or service"),
+  targetAudience: zod.string().optional().describe("Who the brand is for"),
+  tonePreference: zod
+    .enum(["bold", "friendly", "premium", "playful", "professional"])
+    .default(generateBrandBodyTonePreferenceDefault),
+});
+
+export const GenerateBrandResponse = zod.object({
+  brandName: zod.string(),
+  slogan: zod.string(),
+  tagline: zod.string(),
+  toneDescription: zod.string(),
+  brandVoice: zod.string(),
+  targetPersona: zod.string(),
+  colors: zod.array(
+    zod.object({
+      name: zod.string(),
+      hex: zod.string(),
+      usage: zod.string(),
+    }),
+  ),
+  namingRationale: zod.string(),
 });
 
 /**

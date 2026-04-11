@@ -6,10 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./brandColor";
 export * from "./bundleItem";
 export * from "./dashboardStats";
 export * from "./dashboardStatsTopNichesItem";
 export * from "./deleteResponse";
+export * from "./generateBrandBody";
+export * from "./generateBrandBodyTonePreference";
+export * from "./generateBrandResponse";
 export * from "./generateBundleBody";
 export * from "./generateBundleBodyAngle";
 export * from "./generateBundleResponse";
@@ -18,9 +22,13 @@ export * from "./generateIdeasResponse";
 export * from "./generateTikTokScriptBody";
 export * from "./generateTikTokScriptBodyStyle";
 export * from "./generateTikTokScriptResponse";
+export * from "./generateViralHooksBody";
+export * from "./generateViralHooksBodyHookType";
+export * from "./generateViralHooksResponse";
 export * from "./healthStatus";
 export * from "./productIdea";
 export * from "./productIdeaSaturationLevel";
 export * from "./savedIdea";
 export * from "./saveIdeaBody";
 export * from "./tikTokScript";
+export * from "./viralHook";

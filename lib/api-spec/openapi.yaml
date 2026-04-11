@@ -86,6 +86,46 @@ paths:
               schema:
                 $ref: "#/components/schemas/GenerateTikTokScriptResponse"
 
+  /spark/generate-viral-hooks:
+    post:
+      operationId: generateViralHooks
+      tags: [spark]
+      summary: Generate viral hooks
+      description: Generate attention-grabbing hooks for social media content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateViralHooksBody"
+      responses:
+        "200":
+          description: Generated viral hooks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateViralHooksResponse"
+
+  /spark/generate-brand:
+    post:
+      operationId: generateBrand
+      tags: [spark]
+      summary: Generate brand identity
+      description: Generate a complete brand identity from a niche and product concept
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateBrandBody"
+      responses:
+        "200":
+          description: Generated brand identity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateBrandResponse"
+
   /spark/saved-ideas:
     get:
       operationId: getSavedIdeas
@@ -169,10 +209,20 @@ components:
         niche:
           type: string
           description: The market niche to generate ideas for
+        audience:
+          type: string
+          description: Target audience type
+        painPoint:
+          type: string
+          description: Specific pain point to address
+        trendMode:
+          type: boolean
+          description: Focus on trending opportunities
+          default: false
         count:
           type: integer
           description: Number of ideas to generate
-          default: 5
+          default: 3
       required:
         - niche
 
@@ -200,6 +250,8 @@ components:
           type: string
         problemSolved:
           type: string
+        whyItSells:
+          type: string
       required:
         - title
         - description
@@ -209,6 +261,7 @@ components:
         - saturationLevel
         - targetAudience
         - problemSolved
+        - whyItSells
 
     GenerateIdeasResponse:
       type: object
@@ -353,6 +406,122 @@ components:
       required:
         - scripts
         - productTitle
+
+    GenerateViralHooksBody:
+      type: object
+      properties:
+        productTitle:
+          type: string
+          description: Product or offer name
+        description:
+          type: string
+          description: Brief description of the product
+        hookType:
+          type: string
+          enum: [curiosity, pain, story, short, all]
+          default: all
+          description: Type of hook to generate
+        count:
+          type: integer
+          default: 5
+          description: Number of hooks per type
+      required:
+        - productTitle
+
+    ViralHook:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The hook text
+        type:
+          type: string
+          description: Hook type (curiosity, pain, story, short)
+        angle:
+          type: string
+          description: Psychological angle used
+      required:
+        - text
+        - type
+        - angle
+
+    GenerateViralHooksResponse:
+      type: object
+      properties:
+        hooks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ViralHook"
+        productTitle:
+          type: string
+      required:
+        - hooks
+        - productTitle
+
+    GenerateBrandBody:
+      type: object
+      properties:
+        niche:
+          type: string
+          description: Market niche or product category
+        productConcept:
+          type: string
+          description: Brief description of the product or service
+        targetAudience:
+          type: string
+          description: Who the brand is for
+        tonePreference:
+          type: string
+          enum: [bold, friendly, premium, playful, professional]
+          default: bold
+      required:
+        - niche
+        - productConcept
+
+    BrandColor:
+      type: object
+      properties:
+        name:
+          type: string
+        hex:
+          type: string
+        usage:
+          type: string
+      required:
+        - name
+        - hex
+        - usage
+
+    GenerateBrandResponse:
+      type: object
+      properties:
+        brandName:
+          type: string
+        slogan:
+          type: string
+        tagline:
+          type: string
+        toneDescription:
+          type: string
+        brandVoice:
+          type: string
+        targetPersona:
+          type: string
+        colors:
+          type: array
+          items:
+            $ref: "#/components/schemas/BrandColor"
+        namingRationale:
+          type: string
+      required:
+        - brandName
+        - slogan
+        - tagline
+        - toneDescription
+        - brandVoice
+        - targetPersona
+        - colors
+        - namingRationale
 
     SaveIdeaBody:
       type: object

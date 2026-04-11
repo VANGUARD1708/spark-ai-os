@@ -24,4 +24,5 @@ export interface ProductIdea {
   saturationLevel: ProductIdeaSaturationLevel;
   targetAudience: string;
   problemSolved: string;
+  whyItSells: string;
 }
