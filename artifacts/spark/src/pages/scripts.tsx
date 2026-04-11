@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Video, Hash, Copy, PlayCircle, Activity } from "lucide-react";
+import { Loader2, Video, Hash, Copy, PlayCircle, Activity, ShoppingBag, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 
 const formSchema = z.object({
   productTitle: z.string().min(2, "Product title is required").max(100),
@@ -20,17 +21,22 @@ const formSchema = z.object({
   style: z.enum(["educational", "storytelling", "shocking", "transformation"] as const),
 });
 
+const getParam = (key: string) => {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(key) ?? "";
+};
+
 export default function Scripts() {
   const { toast } = useToast();
   const generateScripts = useGenerateTikTokScript();
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { 
-      productTitle: "",
-      productDescription: "",
-      targetAudience: "",
-      style: "shocking"
+    defaultValues: {
+      productTitle: getParam("title"),
+      productDescription: getParam("desc"),
+      targetAudience: getParam("aud"),
+      style: "shocking",
     },
   });
 
@@ -61,9 +67,8 @@ export default function Scripts() {
   return (
     <Layout>
       <div className="w-full max-w-6xl space-y-8 animate-in fade-in duration-500">
-        
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="w-full md:w-1/3 md:sticky md:top-20">
+          <div className="w-full md:w-1/3 md:sticky md:top-8">
             <div className="space-y-4">
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">TikTok Scripts</h1>
@@ -172,7 +177,7 @@ export default function Scripts() {
                       <div className="flex justify-between items-start gap-4">
                         <div className="space-y-1 w-full">
                           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-2">
-                            <PlayCircle className="h-4 w-4" /> 
+                            <PlayCircle className="h-4 w-4" />
                             The Hook (First 3 Seconds)
                           </div>
                           <h3 className="text-xl md:text-2xl font-bold leading-tight">{script.hook}</h3>
@@ -183,8 +188,8 @@ export default function Scripts() {
                         </Badge>
                       </div>
                     </CardHeader>
+
                     <CardContent className="pt-6 space-y-6">
-                      
                       <div>
                         <div className="flex justify-between items-center mb-2">
                           <h4 className="text-sm font-medium text-muted-foreground">Full Script</h4>
@@ -217,8 +222,20 @@ export default function Scripts() {
                           </div>
                         </div>
                       </div>
-
                     </CardContent>
+
+                    {i === 0 && (
+                      <CardFooter className="border-t border-border/40 bg-card p-4 flex flex-col sm:flex-row gap-3 items-center">
+                        <p className="text-sm text-muted-foreground sm:mr-auto">Ready to sell?</p>
+                        <Link href="/storefronts" className="w-full sm:w-auto">
+                          <Button className="w-full group/btn" size="sm">
+                            <ShoppingBag className="h-4 w-4 mr-2" />
+                            Launch Product
+                            <ArrowRight className="ml-2 h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                          </Button>
+                        </Link>
+                      </CardFooter>
+                    )}
                   </Card>
                 ))}
               </div>

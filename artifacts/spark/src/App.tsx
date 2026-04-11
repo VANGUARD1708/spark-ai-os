@@ -8,6 +8,21 @@ import Ideas from "@/pages/ideas";
 import Bundle from "@/pages/bundle";
 import Scripts from "@/pages/scripts";
 import Saved from "@/pages/saved";
+import Trending from "@/pages/trending";
+import Winning from "@/pages/winning";
+import DigitalProduct from "@/pages/digital-product";
+import BrandBuilder from "@/pages/brand-builder";
+import Storefronts from "@/pages/storefronts";
+import ProductPages from "@/pages/product-pages";
+import Orders from "@/pages/orders";
+import ContentPlanner from "@/pages/content-planner";
+import ViralHooks from "@/pages/viral-hooks";
+import Analytics from "@/pages/analytics";
+import ABTesting from "@/pages/ab-testing";
+import Insights from "@/pages/insights";
+import SavedBundles from "@/pages/saved-bundles";
+import Files from "@/pages/files";
+import Settings from "@/pages/settings";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +34,21 @@ function Router() {
       <Route path="/bundle" component={Bundle} />
       <Route path="/scripts" component={Scripts} />
       <Route path="/saved" component={Saved} />
+      <Route path="/trending" component={Trending} />
+      <Route path="/winning" component={Winning} />
+      <Route path="/digital-product" component={DigitalProduct} />
+      <Route path="/brand-builder" component={BrandBuilder} />
+      <Route path="/storefronts" component={Storefronts} />
+      <Route path="/product-pages" component={ProductPages} />
+      <Route path="/orders" component={Orders} />
+      <Route path="/content-planner" component={ContentPlanner} />
+      <Route path="/viral-hooks" component={ViralHooks} />
+      <Route path="/analytics" component={Analytics} />
+      <Route path="/ab-testing" component={ABTesting} />
+      <Route path="/insights" component={Insights} />
+      <Route path="/saved-bundles" component={SavedBundles} />
+      <Route path="/files" component={Files} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -6,12 +6,12 @@ import { useGenerateIdeas, useSaveIdea, type ProductIdea } from "@workspace/api-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Sparkles, TrendingUp, Users, Target, Save, Check } from "lucide-react";
-import { useState, useRef } from "react";
+import { Loader2, Sparkles, TrendingUp, Users, Target, Save, Check, Package, ArrowRight, Lightbulb } from "lucide-react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Progress } from "@/components/ui/progress";
+import { Link } from "wouter";
 
 const formSchema = z.object({
   niche: z.string().min(2, "Niche is required").max(100),
@@ -24,7 +24,7 @@ export default function Ideas() {
   const [ideas, setIdeas] = useState<ProductIdea[]>([]);
   const [nicheUsed, setNicheUsed] = useState("");
   const [savedIndices, setSavedIndices] = useState<Set<number>>(new Set());
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { niche: "" },
@@ -60,13 +60,16 @@ export default function Ideas() {
     }, {
       onSuccess: () => {
         setSavedIndices(prev => new Set(prev).add(index));
-        toast({ title: "Idea saved successfully!" });
+        toast({ title: "Idea saved!" });
       },
       onError: () => {
         toast({ title: "Failed to save idea", variant: "destructive" });
       }
     });
   };
+
+  const getBundleLink = (idea: ProductIdea) =>
+    `/bundle?title=${encodeURIComponent(idea.title)}&desc=${encodeURIComponent(idea.description)}&aud=${encodeURIComponent(idea.targetAudience || "")}`;
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-500";
@@ -77,9 +80,8 @@ export default function Ideas() {
   return (
     <Layout>
       <div className="w-full max-w-6xl space-y-8 animate-in fade-in duration-500">
-        
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="w-full md:w-1/3 sticky top-20">
+          <div className="w-full md:w-1/3 md:sticky md:top-8">
             <div className="space-y-4">
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">Idea Generator</h1>
@@ -141,9 +143,9 @@ export default function Ideas() {
                           <CardTitle className="text-xl group-hover:text-primary transition-colors">{idea.title}</CardTitle>
                           <CardDescription className="mt-2 text-base text-foreground/80">{idea.description}</CardDescription>
                         </div>
-                        <Button 
-                          variant={savedIndices.has(i) ? "secondary" : "outline"} 
-                          size="sm" 
+                        <Button
+                          variant={savedIndices.has(i) ? "secondary" : "outline"}
+                          size="sm"
                           className="shrink-0"
                           onClick={() => handleSave(idea, i)}
                           disabled={savedIndices.has(i) || saveIdea.isPending}
@@ -153,8 +155,8 @@ export default function Ideas() {
                         </Button>
                       </div>
                     </CardHeader>
+
                     <CardContent className="space-y-6">
-                      
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="space-y-2 bg-secondary/30 p-3 rounded-lg">
                           <div className="flex items-center text-sm font-medium text-muted-foreground">
@@ -187,12 +189,27 @@ export default function Ideas() {
                           </h4>
                           <p className="text-sm">{idea.problemSolved}</p>
                         </div>
-                        <div className="flex items-center gap-2 pt-2">
+                        <div className="flex items-center gap-2 pt-1">
                           <Badge variant="outline" className="bg-background">Saturation: {idea.saturationLevel}</Badge>
                         </div>
                       </div>
-
                     </CardContent>
+
+                    <CardFooter className="pt-4 border-t border-border/40 bg-secondary/10 flex gap-2 flex-wrap">
+                      <Link href={getBundleLink(idea)} className="flex-1 min-w-[140px]">
+                        <Button className="w-full group/btn" size="sm">
+                          <Package className="h-4 w-4 mr-2" />
+                          Build Offer
+                          <ArrowRight className="ml-2 h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                        </Button>
+                      </Link>
+                      <Link href={`/scripts?title=${encodeURIComponent(idea.title)}&desc=${encodeURIComponent(idea.description)}&aud=${encodeURIComponent(idea.targetAudience || "")}`} className="flex-1 min-w-[140px]">
+                        <Button variant="outline" className="w-full group/btn" size="sm">
+                          Create Content
+                          <ArrowRight className="ml-2 h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                        </Button>
+                      </Link>
+                    </CardFooter>
                   </Card>
                 ))}
               </div>
@@ -201,7 +218,7 @@ export default function Ideas() {
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Lightbulb className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-medium mb-2">No ideas generated yet</h3>
+                <h3 className="text-xl font-medium mb-2">No ideas yet</h3>
                 <p className="text-muted-foreground max-w-sm">
                   Enter a niche on the left to uncover high-potential product concepts tailored to market gaps.
                 </p>

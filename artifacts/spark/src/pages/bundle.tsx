@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, CheckCircle2, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Package, CheckCircle2, ArrowRight, Video, ShoppingBag } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { Link } from "wouter";
 
 const formSchema = z.object({
   productTitle: z.string().min(2, "Product title is required").max(100),
@@ -25,16 +26,23 @@ const formSchema = z.object({
 export default function Bundle() {
   const { toast } = useToast();
   const generateBundle = useGenerateBundle();
-  
+
+  const getParam = (key: string) => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key) ?? "";
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { 
-      productTitle: "",
-      productDescription: "",
-      targetAudience: "",
-      angle: "transformation"
+    defaultValues: {
+      productTitle: getParam("title"),
+      productDescription: getParam("desc"),
+      targetAudience: getParam("aud"),
+      angle: "transformation",
     },
   });
+
+  const productTitle = form.watch("productTitle");
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     generateBundle.mutate({ data: values }, {
@@ -49,12 +57,15 @@ export default function Bundle() {
 
   const bundle = generateBundle.data;
 
+  const scriptsLink = productTitle
+    ? `/scripts?title=${encodeURIComponent(productTitle)}&desc=${encodeURIComponent(form.getValues("productDescription"))}&aud=${encodeURIComponent(form.getValues("targetAudience"))}`
+    : "/scripts";
+
   return (
     <Layout>
       <div className="w-full max-w-6xl space-y-8 animate-in fade-in duration-500">
-        
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="w-full md:w-1/3 md:sticky md:top-20">
+          <div className="w-full md:w-1/3 md:sticky md:top-8">
             <div className="space-y-4">
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">Bundle Builder</h1>
@@ -163,7 +174,7 @@ export default function Bundle() {
                     {bundle.subheadline}
                   </CardDescription>
                 </CardHeader>
-                
+
                 <CardContent className="p-0">
                   <div className="p-6 md:p-8 bg-card">
                     <h3 className="text-2xl font-bold mb-6 flex items-center">
@@ -213,17 +224,35 @@ export default function Bundle() {
                     <div className="inline-block px-4 py-2 rounded-full bg-background border border-border/50 text-sm font-medium mb-6">
                       {bundle.guarantee}
                     </div>
-                    
+
                     <div className="flex flex-col items-center justify-center mb-8">
                       <div className="text-muted-foreground line-through text-2xl mb-1">{bundle.strikethroughPrice}</div>
                       <div className="text-6xl font-black text-primary drop-shadow-sm">{bundle.price}</div>
                     </div>
-                    
+
                     <Button size="lg" className="w-full md:w-auto text-lg h-14 px-12 font-bold animate-in zoom-in duration-500 delay-300">
                       {bundle.callToAction} <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </div>
                 </CardContent>
+
+                <CardFooter className="border-t border-border/40 bg-card p-5 flex flex-col sm:flex-row gap-3">
+                  <p className="text-sm text-muted-foreground sm:mr-auto">Next step:</p>
+                  <Link href={scriptsLink} className="w-full sm:w-auto">
+                    <Button variant="outline" className="w-full group/btn" size="sm">
+                      <Video className="h-4 w-4 mr-2" />
+                      Create Content
+                      <ArrowRight className="ml-2 h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                    </Button>
+                  </Link>
+                  <Link href="/storefronts" className="w-full sm:w-auto">
+                    <Button className="w-full group/btn" size="sm">
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      Launch Product
+                      <ArrowRight className="ml-2 h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                    </Button>
+                  </Link>
+                </CardFooter>
               </Card>
             ) : (
               <div className="h-[500px] flex flex-col items-center justify-center border border-dashed rounded-xl border-border bg-card/10 text-center p-8">
