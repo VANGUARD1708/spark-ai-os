@@ -1,15 +1,16 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Spark API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: spark
+    description: Spark AI engine operations
 paths:
   /healthz:
     get:
@@ -24,6 +25,134 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /spark/generate-ideas:
+    post:
+      operationId: generateIdeas
+      tags: [spark]
+      summary: Generate product ideas
+      description: Generate AI-powered product ideas based on niche input
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateIdeasBody"
+      responses:
+        "200":
+          description: Generated product ideas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateIdeasResponse"
+
+  /spark/generate-bundle:
+    post:
+      operationId: generateBundle
+      tags: [spark]
+      summary: Generate offer bundle
+      description: Generate a high-converting offer bundle from a product idea
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateBundleBody"
+      responses:
+        "200":
+          description: Generated offer bundle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateBundleResponse"
+
+  /spark/generate-tiktok-script:
+    post:
+      operationId: generateTikTokScript
+      tags: [spark]
+      summary: Generate TikTok script
+      description: Generate a viral TikTok video script for a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateTikTokScriptBody"
+      responses:
+        "200":
+          description: Generated TikTok script
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateTikTokScriptResponse"
+
+  /spark/saved-ideas:
+    get:
+      operationId: getSavedIdeas
+      tags: [spark]
+      summary: Get saved ideas
+      description: Returns list of user saved ideas
+      responses:
+        "200":
+          description: List of saved ideas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SavedIdea"
+    post:
+      operationId: saveIdea
+      tags: [spark]
+      summary: Save an idea
+      description: Save a product idea for later
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveIdeaBody"
+      responses:
+        "201":
+          description: Saved idea
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavedIdea"
+
+  /spark/saved-ideas/{id}:
+    delete:
+      operationId: deleteSavedIdea
+      tags: [spark]
+      summary: Delete a saved idea
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /spark/stats:
+    get:
+      operationId: getStats
+      tags: [spark]
+      summary: Get dashboard stats
+      description: Returns summary stats for the dashboard
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +163,287 @@ components:
       required:
         - status
 
+    GenerateIdeasBody:
+      type: object
+      properties:
+        niche:
+          type: string
+          description: The market niche to generate ideas for
+        count:
+          type: integer
+          description: Number of ideas to generate
+          default: 5
+      required:
+        - niche
+
+    ProductIdea:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        demandScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        competitionScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        profitPotential:
+          type: string
+        saturationLevel:
+          type: string
+          enum: [low, medium, high]
+        targetAudience:
+          type: string
+        problemSolved:
+          type: string
+      required:
+        - title
+        - description
+        - demandScore
+        - competitionScore
+        - profitPotential
+        - saturationLevel
+        - targetAudience
+        - problemSolved
+
+    GenerateIdeasResponse:
+      type: object
+      properties:
+        ideas:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductIdea"
+        niche:
+          type: string
+      required:
+        - ideas
+        - niche
+
+    GenerateBundleBody:
+      type: object
+      properties:
+        productTitle:
+          type: string
+        productDescription:
+          type: string
+        targetAudience:
+          type: string
+        angle:
+          type: string
+          enum: [pain, desire, transformation]
+          default: transformation
+      required:
+        - productTitle
+        - productDescription
+        - targetAudience
+
+    BundleItem:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        value:
+          type: string
+      required:
+        - name
+        - type
+        - description
+        - value
+
+    GenerateBundleResponse:
+      type: object
+      properties:
+        offerName:
+          type: string
+        headline:
+          type: string
+        subheadline:
+          type: string
+        coreProduct:
+          type: string
+        bonuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/BundleItem"
+        price:
+          type: string
+        strikethroughPrice:
+          type: string
+        guarantee:
+          type: string
+        callToAction:
+          type: string
+        bullets:
+          type: array
+          items:
+            type: string
+      required:
+        - offerName
+        - headline
+        - subheadline
+        - coreProduct
+        - bonuses
+        - price
+        - strikethroughPrice
+        - guarantee
+        - callToAction
+        - bullets
+
+    GenerateTikTokScriptBody:
+      type: object
+      properties:
+        productTitle:
+          type: string
+        productDescription:
+          type: string
+        targetAudience:
+          type: string
+        style:
+          type: string
+          enum: [educational, storytelling, shocking, transformation]
+          default: transformation
+      required:
+        - productTitle
+        - productDescription
+        - targetAudience
+
+    TikTokScript:
+      type: object
+      properties:
+        hook:
+          type: string
+          description: The first 3 seconds opening line
+        script:
+          type: string
+          description: Full script with timestamps
+        hashtags:
+          type: array
+          items:
+            type: string
+        caption:
+          type: string
+        estimatedViralScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+      required:
+        - hook
+        - script
+        - hashtags
+        - caption
+        - estimatedViralScore
+
+    GenerateTikTokScriptResponse:
+      type: object
+      properties:
+        scripts:
+          type: array
+          items:
+            $ref: "#/components/schemas/TikTokScript"
+        productTitle:
+          type: string
+      required:
+        - scripts
+        - productTitle
+
+    SaveIdeaBody:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        niche:
+          type: string
+        demandScore:
+          type: integer
+        competitionScore:
+          type: integer
+        profitPotential:
+          type: string
+        saturationLevel:
+          type: string
+        targetAudience:
+          type: string
+        problemSolved:
+          type: string
+      required:
+        - title
+        - description
+        - niche
+
+    SavedIdea:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        niche:
+          type: string
+        demandScore:
+          type: integer
+        competitionScore:
+          type: integer
+        profitPotential:
+          type: string
+        saturationLevel:
+          type: string
+        targetAudience:
+          type: string
+        problemSolved:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - description
+        - niche
+        - createdAt
+
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+
+    DashboardStats:
+      type: object
+      properties:
+        totalIdeas:
+          type: integer
+        totalBundlesGenerated:
+          type: integer
+        totalScriptsGenerated:
+          type: integer
+        topNiches:
+          type: array
+          items:
+            type: object
+            properties:
+              niche:
+                type: string
+              count:
+                type: integer
+            required:
+              - niche
+              - count
+      required:
+        - totalIdeas
+        - totalBundlesGenerated
+        - totalScriptsGenerated
+        - topNiches
