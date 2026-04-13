@@ -1,23 +1,39 @@
 openapi: 3.1.0
 info:
-  title: Api
-  version: 0.1.0
-  description: Spark API specification
+  title: Spark API
+  version: 0.2.0
+  description: Spark commerce operating system API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
-  - name: spark
-    description: Spark AI engine operations
+  - name: auth
+    description: Auth operations
+  - name: ideas
+    description: Idea generation and management
+  - name: bundles
+    description: Bundle generation and management
+  - name: scripts
+    description: Script generation and management
+  - name: hooks
+    description: Viral hook generation and management
+  - name: brands
+    description: Brand identity generation and management
+  - name: assets
+    description: Unified asset management
+  - name: analytics
+    description: Analytics and stats
+  - name: campaigns
+    description: Distribution campaigns
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -26,12 +42,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
 
+  # ─── AUTH ───────────────────────────────────
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      description: Returns the current authenticated user or a guest user object
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # ─── IDEAS ──────────────────────────────────
   /spark/generate-ideas:
     post:
       operationId: generateIdeas
-      tags: [spark]
+      tags: [ideas]
       summary: Generate product ideas
-      description: Generate AI-powered product ideas based on niche input
       requestBody:
         required: true
         content:
@@ -46,92 +77,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/GenerateIdeasResponse"
 
-  /spark/generate-bundle:
-    post:
-      operationId: generateBundle
-      tags: [spark]
-      summary: Generate offer bundle
-      description: Generate a high-converting offer bundle from a product idea
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GenerateBundleBody"
-      responses:
-        "200":
-          description: Generated offer bundle
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenerateBundleResponse"
-
-  /spark/generate-tiktok-script:
-    post:
-      operationId: generateTikTokScript
-      tags: [spark]
-      summary: Generate TikTok script
-      description: Generate a viral TikTok video script for a product
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GenerateTikTokScriptBody"
-      responses:
-        "200":
-          description: Generated TikTok script
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenerateTikTokScriptResponse"
-
-  /spark/generate-viral-hooks:
-    post:
-      operationId: generateViralHooks
-      tags: [spark]
-      summary: Generate viral hooks
-      description: Generate attention-grabbing hooks for social media content
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GenerateViralHooksBody"
-      responses:
-        "200":
-          description: Generated viral hooks
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenerateViralHooksResponse"
-
-  /spark/generate-brand:
-    post:
-      operationId: generateBrand
-      tags: [spark]
-      summary: Generate brand identity
-      description: Generate a complete brand identity from a niche and product concept
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GenerateBrandBody"
-      responses:
-        "200":
-          description: Generated brand identity
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenerateBrandResponse"
-
   /spark/saved-ideas:
     get:
       operationId: getSavedIdeas
-      tags: [spark]
-      summary: Get saved ideas
-      description: Returns list of user saved ideas
+      tags: [ideas]
+      summary: List saved ideas
+      parameters:
+        - name: niche
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
       responses:
         "200":
           description: List of saved ideas
@@ -143,9 +108,8 @@ paths:
                   $ref: "#/components/schemas/SavedIdea"
     post:
       operationId: saveIdea
-      tags: [spark]
+      tags: [ideas]
       summary: Save an idea
-      description: Save a product idea for later
       requestBody:
         required: true
         content:
@@ -161,9 +125,32 @@ paths:
                 $ref: "#/components/schemas/SavedIdea"
 
   /spark/saved-ideas/{id}:
+    get:
+      operationId: getSavedIdeaById
+      tags: [ideas]
+      summary: Get a saved idea by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Saved idea
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavedIdea"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       operationId: deleteSavedIdea
-      tags: [spark]
+      tags: [ideas]
       summary: Delete a saved idea
       parameters:
         - name: id
@@ -179,12 +166,368 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteResponse"
 
+  # ─── BUNDLES ─────────────────────────────────
+  /spark/generate-bundle:
+    post:
+      operationId: generateBundle
+      tags: [bundles]
+      summary: Generate offer bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateBundleBody"
+      responses:
+        "200":
+          description: Generated offer bundle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateBundleResponse"
+
+  /spark/saved-bundles:
+    get:
+      operationId: getSavedBundles
+      tags: [bundles]
+      summary: List saved bundles
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of saved bundles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SavedBundle"
+    post:
+      operationId: saveBundle
+      tags: [bundles]
+      summary: Save a bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveBundleBody"
+      responses:
+        "201":
+          description: Saved bundle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavedBundle"
+
+  /spark/saved-bundles/{id}:
+    get:
+      operationId: getSavedBundleById
+      tags: [bundles]
+      summary: Get a saved bundle by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Saved bundle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavedBundle"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteSavedBundle
+      tags: [bundles]
+      summary: Delete a saved bundle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── SCRIPTS ─────────────────────────────────
+  /spark/generate-tiktok-script:
+    post:
+      operationId: generateTikTokScript
+      tags: [scripts]
+      summary: Generate TikTok scripts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateTikTokScriptBody"
+      responses:
+        "200":
+          description: Generated scripts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateTikTokScriptResponse"
+
+  /spark/saved-scripts:
+    get:
+      operationId: getSavedScripts
+      tags: [scripts]
+      summary: List saved scripts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of saved scripts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SavedScript"
+    post:
+      operationId: saveScript
+      tags: [scripts]
+      summary: Save a script set
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveScriptBody"
+      responses:
+        "201":
+          description: Saved script
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavedScript"
+
+  /spark/saved-scripts/{id}:
+    delete:
+      operationId: deleteSavedScript
+      tags: [scripts]
+      summary: Delete a saved script set
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── HOOKS ───────────────────────────────────
+  /spark/generate-viral-hooks:
+    post:
+      operationId: generateViralHooks
+      tags: [hooks]
+      summary: Generate viral hooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateViralHooksBody"
+      responses:
+        "200":
+          description: Generated viral hooks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateViralHooksResponse"
+
+  /spark/saved-hooks:
+    get:
+      operationId: getSavedHooks
+      tags: [hooks]
+      summary: List saved hook sets
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: List of saved hook sets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SavedHook"
+    post:
+      operationId: saveHooks
+      tags: [hooks]
+      summary: Save a hook set
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveHooksBody"
+      responses:
+        "201":
+          description: Saved hook set
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavedHook"
+
+  /spark/saved-hooks/{id}:
+    delete:
+      operationId: deleteSavedHook
+      tags: [hooks]
+      summary: Delete a saved hook set
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── BRANDS ──────────────────────────────────
+  /spark/generate-brand:
+    post:
+      operationId: generateBrand
+      tags: [brands]
+      summary: Generate brand identity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateBrandBody"
+      responses:
+        "200":
+          description: Generated brand identity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateBrandResponse"
+
+  /spark/saved-brands:
+    get:
+      operationId: getSavedBrands
+      tags: [brands]
+      summary: List saved brands
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: List of saved brands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SavedBrand"
+    post:
+      operationId: saveBrand
+      tags: [brands]
+      summary: Save a brand identity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveBrandBody"
+      responses:
+        "201":
+          description: Saved brand
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavedBrand"
+
+  /spark/saved-brands/{id}:
+    delete:
+      operationId: deleteSavedBrand
+      tags: [brands]
+      summary: Delete a saved brand
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── ASSETS ──────────────────────────────────
+  /spark/assets:
+    get:
+      operationId: getAssets
+      tags: [assets]
+      summary: Get all assets summary
+      description: Returns unified counts and recent items across all asset types
+      responses:
+        "200":
+          description: Assets summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetsResponse"
+
+  # ─── ANALYTICS ───────────────────────────────
   /spark/stats:
     get:
       operationId: getStats
-      tags: [spark]
+      tags: [analytics]
       summary: Get dashboard stats
-      description: Returns summary stats for the dashboard
       responses:
         "200":
           description: Dashboard stats
@@ -193,38 +536,196 @@ paths:
               schema:
                 $ref: "#/components/schemas/DashboardStats"
 
+  /spark/analytics:
+    get:
+      operationId: getAnalytics
+      tags: [analytics]
+      summary: Get detailed analytics
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+            description: Number of days to look back
+      responses:
+        "200":
+          description: Detailed analytics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsResponse"
+
+  # ─── CAMPAIGNS ───────────────────────────────
+  /spark/campaigns:
+    get:
+      operationId: getCampaigns
+      tags: [campaigns]
+      summary: List campaigns
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, active, published, paused]
+      responses:
+        "200":
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Campaign"
+    post:
+      operationId: createCampaign
+      tags: [campaigns]
+      summary: Create a campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampaignBody"
+      responses:
+        "201":
+          description: Created campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+
+  /spark/campaigns/{id}:
+    get:
+      operationId: getCampaignById
+      tags: [campaigns]
+      summary: Get a campaign by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateCampaign
+      tags: [campaigns]
+      summary: Update a campaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCampaignBody"
+      responses:
+        "200":
+          description: Updated campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteCampaign
+      tags: [campaigns]
+      summary: Delete a campaign
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
 components:
   schemas:
+
     HealthStatus:
       type: object
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+      required: [error]
+
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required: [success]
+
+    # ─── AUTH ────────────────────────────────
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        plan:
+          type: string
+          enum: [free, pro]
+        isGuest:
+          type: boolean
+      required: [id, plan, isGuest]
+
+    # ─── IDEAS ───────────────────────────────
     GenerateIdeasBody:
       type: object
       properties:
         niche:
           type: string
-          description: The market niche to generate ideas for
         audience:
           type: string
-          description: Target audience type
         painPoint:
           type: string
-          description: Specific pain point to address
         trendMode:
           type: boolean
-          description: Focus on trending opportunities
           default: false
         count:
           type: integer
-          description: Number of ideas to generate
           default: 3
-      required:
-        - niche
+      required: [niche]
 
     ProductIdea:
       type: object
@@ -252,16 +753,7 @@ components:
           type: string
         whyItSells:
           type: string
-      required:
-        - title
-        - description
-        - demandScore
-        - competitionScore
-        - profitPotential
-        - saturationLevel
-        - targetAudience
-        - problemSolved
-        - whyItSells
+      required: [title, description, demandScore, competitionScore, profitPotential, saturationLevel, targetAudience, problemSolved, whyItSells]
 
     GenerateIdeasResponse:
       type: object
@@ -272,10 +764,64 @@ components:
             $ref: "#/components/schemas/ProductIdea"
         niche:
           type: string
-      required:
-        - ideas
-        - niche
+      required: [ideas, niche]
 
+    SaveIdeaBody:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        niche:
+          type: string
+        demandScore:
+          type: integer
+        competitionScore:
+          type: integer
+        profitPotential:
+          type: string
+        saturationLevel:
+          type: string
+        targetAudience:
+          type: string
+        problemSolved:
+          type: string
+        whyItSells:
+          type: string
+      required: [title, description, niche]
+
+    SavedIdea:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        niche:
+          type: string
+        demandScore:
+          type: integer
+        competitionScore:
+          type: integer
+        profitPotential:
+          type: string
+        saturationLevel:
+          type: string
+        targetAudience:
+          type: string
+        problemSolved:
+          type: string
+        whyItSells:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, title, description, niche, createdAt]
+
+    # ─── BUNDLES ─────────────────────────────
     GenerateBundleBody:
       type: object
       properties:
@@ -289,10 +835,7 @@ components:
           type: string
           enum: [pain, desire, transformation]
           default: transformation
-      required:
-        - productTitle
-        - productDescription
-        - targetAudience
+      required: [productTitle, productDescription, targetAudience]
 
     BundleItem:
       type: object
@@ -305,11 +848,7 @@ components:
           type: string
         value:
           type: string
-      required:
-        - name
-        - type
-        - description
-        - value
+      required: [name, type, description, value]
 
     GenerateBundleResponse:
       type: object
@@ -338,18 +877,57 @@ components:
           type: array
           items:
             type: string
-      required:
-        - offerName
-        - headline
-        - subheadline
-        - coreProduct
-        - bonuses
-        - price
-        - strikethroughPrice
-        - guarantee
-        - callToAction
-        - bullets
+      required: [offerName, headline, subheadline, coreProduct, bonuses, price, strikethroughPrice, guarantee, callToAction, bullets]
 
+    SaveBundleBody:
+      type: object
+      properties:
+        productTitle:
+          type: string
+        targetAudience:
+          type: string
+        angle:
+          type: string
+        offerName:
+          type: string
+        headline:
+          type: string
+        price:
+          type: string
+        strikethroughPrice:
+          type: string
+        data:
+          type: object
+          description: Full bundle JSON
+      required: [productTitle, offerName, headline, data]
+
+    SavedBundle:
+      type: object
+      properties:
+        id:
+          type: integer
+        productTitle:
+          type: string
+        targetAudience:
+          type: string
+        angle:
+          type: string
+        offerName:
+          type: string
+        headline:
+          type: string
+        price:
+          type: string
+        strikethroughPrice:
+          type: string
+        data:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, productTitle, offerName, headline, data, createdAt]
+
+    # ─── SCRIPTS ─────────────────────────────
     GenerateTikTokScriptBody:
       type: object
       properties:
@@ -363,20 +941,15 @@ components:
           type: string
           enum: [educational, storytelling, shocking, transformation]
           default: transformation
-      required:
-        - productTitle
-        - productDescription
-        - targetAudience
+      required: [productTitle, productDescription, targetAudience]
 
     TikTokScript:
       type: object
       properties:
         hook:
           type: string
-          description: The first 3 seconds opening line
         script:
           type: string
-          description: Full script with timestamps
         hashtags:
           type: array
           items:
@@ -387,12 +960,7 @@ components:
           type: integer
           minimum: 0
           maximum: 100
-      required:
-        - hook
-        - script
-        - hashtags
-        - caption
-        - estimatedViralScore
+      required: [hook, script, hashtags, caption, estimatedViralScore]
 
     GenerateTikTokScriptResponse:
       type: object
@@ -403,47 +971,63 @@ components:
             $ref: "#/components/schemas/TikTokScript"
         productTitle:
           type: string
-      required:
-        - scripts
-        - productTitle
+      required: [scripts, productTitle]
 
+    SaveScriptBody:
+      type: object
+      properties:
+        productTitle:
+          type: string
+        style:
+          type: string
+        data:
+          type: object
+          description: Full scripts array JSON
+      required: [productTitle, data]
+
+    SavedScript:
+      type: object
+      properties:
+        id:
+          type: integer
+        productTitle:
+          type: string
+        style:
+          type: string
+        data:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, productTitle, data, createdAt]
+
+    # ─── HOOKS ───────────────────────────────
     GenerateViralHooksBody:
       type: object
       properties:
         productTitle:
           type: string
-          description: Product or offer name
         description:
           type: string
-          description: Brief description of the product
         hookType:
           type: string
           enum: [curiosity, pain, story, short, all]
           default: all
-          description: Type of hook to generate
         count:
           type: integer
           default: 5
-          description: Number of hooks per type
-      required:
-        - productTitle
+      required: [productTitle]
 
     ViralHook:
       type: object
       properties:
         text:
           type: string
-          description: The hook text
         type:
           type: string
-          description: Hook type (curiosity, pain, story, short)
         angle:
           type: string
-          description: Psychological angle used
-      required:
-        - text
-        - type
-        - angle
+      required: [text, type, angle]
 
     GenerateViralHooksResponse:
       type: object
@@ -454,29 +1038,51 @@ components:
             $ref: "#/components/schemas/ViralHook"
         productTitle:
           type: string
-      required:
-        - hooks
-        - productTitle
+      required: [hooks, productTitle]
 
+    SaveHooksBody:
+      type: object
+      properties:
+        productTitle:
+          type: string
+        hookType:
+          type: string
+        data:
+          type: object
+          description: Full hooks array JSON
+      required: [productTitle, data]
+
+    SavedHook:
+      type: object
+      properties:
+        id:
+          type: integer
+        productTitle:
+          type: string
+        hookType:
+          type: string
+        data:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, productTitle, data, createdAt]
+
+    # ─── BRANDS ──────────────────────────────
     GenerateBrandBody:
       type: object
       properties:
         niche:
           type: string
-          description: Market niche or product category
         productConcept:
           type: string
-          description: Brief description of the product or service
         targetAudience:
           type: string
-          description: Who the brand is for
         tonePreference:
           type: string
           enum: [bold, friendly, premium, playful, professional]
           default: bold
-      required:
-        - niche
-        - productConcept
+      required: [niche, productConcept]
 
     BrandColor:
       type: object
@@ -487,10 +1093,7 @@ components:
           type: string
         usage:
           type: string
-      required:
-        - name
-        - hex
-        - usage
+      required: [name, hex, usage]
 
     GenerateBrandResponse:
       type: object
@@ -513,83 +1116,70 @@ components:
             $ref: "#/components/schemas/BrandColor"
         namingRationale:
           type: string
-      required:
-        - brandName
-        - slogan
-        - tagline
-        - toneDescription
-        - brandVoice
-        - targetPersona
-        - colors
-        - namingRationale
+      required: [brandName, slogan, tagline, toneDescription, brandVoice, targetPersona, colors, namingRationale]
 
-    SaveIdeaBody:
+    SaveBrandBody:
       type: object
       properties:
-        title:
-          type: string
-        description:
-          type: string
         niche:
           type: string
-        demandScore:
-          type: integer
-        competitionScore:
-          type: integer
-        profitPotential:
+        brandName:
           type: string
-        saturationLevel:
+        slogan:
           type: string
-        targetAudience:
-          type: string
-        problemSolved:
-          type: string
-      required:
-        - title
-        - description
-        - niche
+        data:
+          type: object
+          description: Full brand identity JSON
+      required: [niche, brandName, data]
 
-    SavedIdea:
+    SavedBrand:
       type: object
       properties:
         id:
           type: integer
-        title:
-          type: string
-        description:
-          type: string
         niche:
           type: string
-        demandScore:
-          type: integer
-        competitionScore:
-          type: integer
-        profitPotential:
+        brandName:
           type: string
-        saturationLevel:
+        slogan:
           type: string
-        targetAudience:
-          type: string
-        problemSolved:
-          type: string
+        data:
+          type: object
         createdAt:
           type: string
           format: date-time
-      required:
-        - id
-        - title
-        - description
-        - niche
-        - createdAt
+      required: [id, niche, brandName, data, createdAt]
 
-    DeleteResponse:
+    # ─── ASSETS ──────────────────────────────
+    AssetTypeSummary:
       type: object
       properties:
-        success:
-          type: boolean
-      required:
-        - success
+        count:
+          type: integer
+        recent:
+          type: array
+          items:
+            type: object
+      required: [count, recent]
 
+    AssetsResponse:
+      type: object
+      properties:
+        ideas:
+          $ref: "#/components/schemas/AssetTypeSummary"
+        bundles:
+          $ref: "#/components/schemas/AssetTypeSummary"
+        scripts:
+          $ref: "#/components/schemas/AssetTypeSummary"
+        hooks:
+          $ref: "#/components/schemas/AssetTypeSummary"
+        brands:
+          $ref: "#/components/schemas/AssetTypeSummary"
+        totalAssets:
+          type: integer
+      required: [ideas, bundles, scripts, hooks, brands, totalAssets]
+
+    # ─── ANALYTICS ───────────────────────────
     DashboardStats:
       type: object
       properties:
@@ -608,11 +1198,151 @@ components:
                 type: string
               count:
                 type: integer
-            required:
-              - niche
-              - count
-      required:
-        - totalIdeas
-        - totalBundlesGenerated
-        - totalScriptsGenerated
-        - topNiches
+            required: [niche, count]
+      required: [totalIdeas, totalBundlesGenerated, totalScriptsGenerated, topNiches]
+
+    GenerationDataPoint:
+      type: object
+      properties:
+        date:
+          type: string
+        count:
+          type: integer
+      required: [date, count]
+
+    TypeBreakdown:
+      type: object
+      properties:
+        type:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+      required: [type, count, percentage]
+
+    AnalyticsResponse:
+      type: object
+      properties:
+        period:
+          type: string
+        totalGenerations:
+          type: integer
+        generationsByType:
+          type: array
+          items:
+            $ref: "#/components/schemas/TypeBreakdown"
+        generationsByDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/GenerationDataPoint"
+        topNiches:
+          type: array
+          items:
+            type: object
+            properties:
+              niche:
+                type: string
+              count:
+                type: integer
+            required: [niche, count]
+        savedAssets:
+          type: object
+          properties:
+            ideas:
+              type: integer
+            bundles:
+              type: integer
+            scripts:
+              type: integer
+            hooks:
+              type: integer
+            brands:
+              type: integer
+          required: [ideas, bundles, scripts, hooks, brands]
+      required: [period, totalGenerations, generationsByType, generationsByDay, topNiches, savedAssets]
+
+    # ─── CAMPAIGNS ───────────────────────────
+    CreateCampaignBody:
+      type: object
+      properties:
+        name:
+          type: string
+        productTitle:
+          type: string
+        channels:
+          type: array
+          items:
+            type: string
+        content:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            caption:
+              type: string
+            price:
+              type: string
+            ctaLink:
+              type: string
+        scheduledAt:
+          type: string
+          format: date-time
+      required: [name]
+
+    UpdateCampaignBody:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum: [draft, active, published, paused]
+        productTitle:
+          type: string
+        channels:
+          type: array
+          items:
+            type: string
+        content:
+          type: object
+        scheduledAt:
+          type: string
+          format: date-time
+        metrics:
+          type: object
+
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: string
+        productTitle:
+          type: string
+        channels:
+          type: array
+          items:
+            type: string
+        content:
+          type: object
+        scheduledAt:
+          type: string
+          format: date-time
+        publishedAt:
+          type: string
+          format: date-time
+        metrics:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, status, createdAt, updatedAt]
