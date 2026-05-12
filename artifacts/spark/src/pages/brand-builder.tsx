@@ -2,15 +2,17 @@ import { Layout } from "@/components/layout";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGenerateBrand } from "@workspace/api-client-react";
+import { useGenerateBrand, useSaveBrand, getGetSavedBrandsQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Palette, Copy, ArrowRight, ShoppingBag, Users } from "lucide-react";
+import { Loader2, Palette, Copy, ArrowRight, ShoppingBag, Users, Bookmark, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   niche: z.string().min(2, "Niche is required").max(100),
@@ -29,7 +31,10 @@ const TONE_OPTIONS = [
 
 export default function BrandBuilder() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const generateBrand = useGenerateBrand();
+  const saveBrand = useSaveBrand();
+  const [saved, setSaved] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,19 +42,39 @@ export default function BrandBuilder() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    setSaved(false);
     generateBrand.mutate({ data: values }, {
-      onSuccess: () => {
-        toast({ title: "Brand identity generated!" });
-      },
-      onError: () => {
-        toast({ title: "Failed to generate brand", variant: "destructive" });
-      }
+      onSuccess: () => toast({ title: "Brand identity generated!" }),
+      onError: () => toast({ title: "Failed to generate brand", variant: "destructive" }),
     });
   };
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: "Copied!" });
+  };
+
+  const handleSave = () => {
+    const brand = generateBrand.data;
+    if (!brand) return;
+    saveBrand.mutate(
+      {
+        data: {
+          niche: form.getValues("niche"),
+          brandName: brand.brandName,
+          slogan: brand.slogan,
+          data: brand as any,
+        }
+      },
+      {
+        onSuccess: () => {
+          setSaved(true);
+          toast({ title: "Brand saved to Asset Command Center" });
+          queryClient.invalidateQueries({ queryKey: getGetSavedBrandsQueryKey() });
+        },
+        onError: () => toast({ title: "Failed to save brand", variant: "destructive" }),
+      }
+    );
   };
 
   const brand = generateBrand.data;
@@ -165,9 +190,19 @@ export default function BrandBuilder() {
                     <CardDescription className="text-lg text-foreground/90 font-medium mt-2">{brand.slogan}</CardDescription>
                     <p className="text-sm text-muted-foreground mt-3 max-w-md mx-auto leading-relaxed">{brand.tagline}</p>
                   </CardHeader>
-                  <div className="flex items-center justify-center gap-2 pb-6">
+                  <div className="flex items-center justify-center gap-3 pb-6">
                     <Button variant="ghost" size="sm" onClick={() => handleCopy(`${brand.brandName}\n${brand.slogan}\n\n${brand.tagline}`)}>
                       <Copy className="h-4 w-4 mr-2" /> Copy Brand Details
+                    </Button>
+                    <Button
+                      variant={saved ? "secondary" : "outline"}
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={saveBrand.isPending || saved}
+                      className={saved ? "text-green-400 border-green-400/30" : ""}
+                    >
+                      {saved ? <Check className="h-4 w-4 mr-2 text-green-400" /> : <Bookmark className="h-4 w-4 mr-2" />}
+                      {saved ? "Saved" : saveBrand.isPending ? "Saving…" : "Save Brand"}
                     </Button>
                   </div>
                 </Card>
@@ -233,6 +268,13 @@ export default function BrandBuilder() {
 
                 <div className="border-t border-border/40 pt-4 flex flex-col sm:flex-row gap-3 items-center">
                   <p className="text-sm text-muted-foreground sm:mr-auto">Next step:</p>
+                  <Link href="/campaigns" className="w-full sm:w-auto">
+                    <Button variant="outline" className="w-full group/btn" size="sm">
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Launch Campaign
+                      <ArrowRight className="ml-2 h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                    </Button>
+                  </Link>
                   <Link href="/storefronts" className="w-full sm:w-auto">
                     <Button className="w-full group/btn" size="sm">
                       <ShoppingBag className="h-4 w-4 mr-2" />

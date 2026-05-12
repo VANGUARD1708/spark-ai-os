@@ -456,6 +456,43 @@ export interface Campaign {
   updatedAt: string;
 }
 
+export type CommandMessageItemRole =
+  (typeof CommandMessageItemRole)[keyof typeof CommandMessageItemRole];
+
+export const CommandMessageItemRole = {
+  user: "user",
+  assistant: "assistant",
+} as const;
+
+export interface CommandMessageItem {
+  role: CommandMessageItemRole;
+  content: string;
+}
+
+export interface CommandBody {
+  goal: string;
+  history?: CommandMessageItem[];
+}
+
+export interface CommandSection {
+  type: string;
+  title: string;
+  content: string;
+  items?: string[];
+}
+
+export interface CommandAction {
+  label: string;
+  href: string;
+  description?: string;
+}
+
+export interface CommandResponse {
+  message: string;
+  sections: CommandSection[];
+  actions: CommandAction[];
+}
+
 export type GetSavedIdeasParams = {
   niche?: string;
   limit?: number;

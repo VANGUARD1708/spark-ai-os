@@ -27,6 +27,8 @@ tags:
     description: Analytics and stats
   - name: campaigns
     description: Distribution campaigns
+  - name: command
+    description: SPARK Command Center
 
 paths:
   /healthz:
@@ -665,6 +667,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DeleteResponse"
+
+  # ─── COMMAND CENTER ──────────────────────────────
+  /spark/command:
+    post:
+      operationId: runCommand
+      tags: [command]
+      summary: Run a SPARK command
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommandBody"
+      responses:
+        "200":
+          description: Command result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponse"
 
 components:
   schemas:
@@ -1346,3 +1368,66 @@ components:
           type: string
           format: date-time
       required: [id, name, status, createdAt, updatedAt]
+
+    # ─── COMMAND ─────────────────────────────────
+    CommandMessageItem:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+      required: [role, content]
+
+    CommandBody:
+      type: object
+      properties:
+        goal:
+          type: string
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommandMessageItem"
+      required: [goal]
+
+    CommandSection:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        items:
+          type: array
+          items:
+            type: string
+      required: [type, title, content]
+
+    CommandAction:
+      type: object
+      properties:
+        label:
+          type: string
+        href:
+          type: string
+        description:
+          type: string
+      required: [label, href]
+
+    CommandResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommandSection"
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommandAction"
+      required: [message, sections, actions]

@@ -644,3 +644,37 @@ export const DeleteCampaignParams = zod.object({
 export const DeleteCampaignResponse = zod.object({
   success: zod.boolean(),
 });
+
+/**
+ * @summary Run a SPARK command
+ */
+export const RunCommandBody = zod.object({
+  goal: zod.string(),
+  history: zod
+    .array(
+      zod.object({
+        role: zod.enum(["user", "assistant"]),
+        content: zod.string(),
+      }),
+    )
+    .optional(),
+});
+
+export const RunCommandResponse = zod.object({
+  message: zod.string(),
+  sections: zod.array(
+    zod.object({
+      type: zod.string(),
+      title: zod.string(),
+      content: zod.string(),
+      items: zod.array(zod.string()).optional(),
+    }),
+  ),
+  actions: zod.array(
+    zod.object({
+      label: zod.string(),
+      href: zod.string(),
+      description: zod.string().optional(),
+    }),
+  ),
+});

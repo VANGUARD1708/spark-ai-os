@@ -2,17 +2,19 @@ import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import {
   Zap, LayoutDashboard, Lightbulb, TrendingUp, Trophy,
-  Package, FileText, Palette, ShoppingBag, Globe, ClipboardList,
-  Video, Calendar, Flame, BarChart2, FlaskConical, Sparkles,
-  Bookmark, Archive, FolderOpen, Settings, Menu, X, ChevronRight,
-  Radio, Send, Layers, Clock, Activity
+  Package, Palette, Video, Flame, BarChart2, FlaskConical,
+  Bookmark, FolderOpen, Settings, Menu, X, ChevronRight,
+  Send, Bot, Megaphone, Search, Globe, Crown, Layers,
+  Radio, Clock, Sparkles, Target, Activity, Users, Radar
 } from "lucide-react";
+
+type Badge = "Beta" | "Labs" | "Pro" | "Preview" | "Enterprise";
 
 interface NavItem {
   href: string;
   label: string;
   icon: React.ElementType;
-  soon?: boolean;
+  badge?: Badge;
 }
 
 interface NavSection {
@@ -20,63 +22,74 @@ interface NavSection {
   items: NavItem[];
 }
 
+const BADGE_STYLES: Record<Badge, string> = {
+  Beta: "text-blue-400/70 bg-blue-400/10",
+  Labs: "text-orange-400/70 bg-orange-400/10",
+  Pro: "text-yellow-400/70 bg-yellow-400/10",
+  Preview: "text-purple-400/70 bg-purple-400/10",
+  Enterprise: "text-green-400/70 bg-green-400/10",
+};
+
 const sections: NavSection[] = [
   {
-    label: "Research",
+    label: "Discover",
     items: [
       { href: "/ideas", label: "Idea Generator", icon: Lightbulb },
-      { href: "/trending", label: "Trending Products", icon: TrendingUp, soon: true },
-      { href: "/winning", label: "Winning Products", icon: Trophy, soon: true },
+      { href: "/trending", label: "Trend Radar", icon: Radar, badge: "Beta" },
+      { href: "/winning", label: "Winning Products", icon: Trophy, badge: "Beta" },
+      { href: "/insights", label: "Market Signals", icon: Target, badge: "Labs" },
     ],
   },
   {
     label: "Build",
     items: [
       { href: "/bundle", label: "Bundle Builder", icon: Package },
-      { href: "/digital-product", label: "Digital Product", icon: FileText, soon: true },
       { href: "/brand-builder", label: "Brand Builder", icon: Palette },
+      { href: "/digital-product", label: "Offer Builder", icon: Sparkles, badge: "Beta" },
+      { href: "/storefronts", label: "Landing Pages", icon: Globe, badge: "Labs" },
     ],
   },
   {
-    label: "Sell",
+    label: "Create",
     items: [
-      { href: "/storefronts", label: "Storefronts", icon: ShoppingBag, soon: true },
-      { href: "/product-pages", label: "Product Pages", icon: Globe, soon: true },
-      { href: "/orders", label: "Orders", icon: ClipboardList, soon: true },
-    ],
-  },
-  {
-    label: "Grow",
-    items: [
-      { href: "/scripts", label: "TikTok Scripts", icon: Video },
-      { href: "/content-planner", label: "Content Planner", icon: Calendar },
       { href: "/viral-hooks", label: "Viral Hooks", icon: Flame },
+      { href: "/scripts", label: "TikTok Scripts", icon: Video },
+      { href: "/content-planner", label: "Ad Generator", icon: Layers, badge: "Labs" },
+      { href: "/performance", label: "Email / SMS", icon: Send, badge: "Labs" },
     ],
   },
   {
-    label: "Distribute",
+    label: "Launch",
     items: [
-      { href: "/distribute", label: "Connected Accounts", icon: Radio, soon: true },
-      { href: "/compose", label: "Publish Composer", icon: Send, soon: true },
-      { href: "/publish", label: "Multi-Channel", icon: Layers, soon: true },
-      { href: "/schedule", label: "Scheduling", icon: Clock, soon: true },
-      { href: "/performance", label: "Performance", icon: Activity, soon: true },
+      { href: "/campaigns", label: "Campaign Manager", icon: Megaphone },
+      { href: "/compose", label: "Publish Composer", icon: Send },
+      { href: "/schedule", label: "Scheduling", icon: Clock, badge: "Beta" },
+      { href: "/distribute", label: "Automations", icon: Radio, badge: "Labs" },
     ],
   },
   {
-    label: "Optimize",
+    label: "Scale",
     items: [
-      { href: "/analytics", label: "Analytics", icon: BarChart2, soon: true },
-      { href: "/ab-testing", label: "A/B Testing", icon: FlaskConical, soon: true },
-      { href: "/insights", label: "Insights", icon: Sparkles, soon: true },
+      { href: "/analytics", label: "Analytics", icon: BarChart2 },
+      { href: "/ab-testing", label: "A/B Testing", icon: FlaskConical, badge: "Labs" },
+      { href: "/publish", label: "Recommendations", icon: Activity, badge: "Labs" },
+      { href: "/orders", label: "Revenue Forecast", icon: TrendingUp, badge: "Labs" },
+    ],
+  },
+  {
+    label: "AI Agents",
+    items: [
+      { href: "/agents", label: "All Agents", icon: Bot },
+      { href: "/agents", label: "Research Agent", icon: Search, badge: "Beta" },
+      { href: "/agents", label: "Growth Agent", icon: TrendingUp, badge: "Beta" },
+      { href: "/agents", label: "Sales Agent", icon: Users, badge: "Labs" },
     ],
   },
   {
     label: "Assets",
     items: [
-      { href: "/assets", label: "Saved Ideas", icon: Bookmark },
-      { href: "/saved-bundles", label: "Saved Bundles", icon: Archive, soon: true },
-      { href: "/files", label: "Files", icon: FolderOpen, soon: true },
+      { href: "/assets", label: "Asset Command Center", icon: Bookmark },
+      { href: "/files", label: "Files", icon: FolderOpen, badge: "Beta" },
     ],
   },
 ];
@@ -89,95 +102,102 @@ export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [location]);
+  useEffect(() => { setOpen(false); }, [location]);
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  const navLink = (href: string, label: string, Icon: React.ElementType, badge?: Badge) => {
+    const isActive = location === href && !(href === "/agents" && label !== "All Agents");
+    const activeActual = location === href;
+    return (
+      <Link key={`${href}-${label}`} href={href}>
+        <button className={`w-full flex items-center gap-2.5 px-3 py-[7px] rounded-lg text-[13px] transition-all ${
+          activeActual
+            ? "bg-primary/15 text-primary font-medium"
+            : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+        }`}>
+          <Icon className="h-[15px] w-[15px] shrink-0" />
+          <span className="flex-1 text-left">{label}</span>
+          {badge && (
+            <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${BADGE_STYLES[badge]}`}>
+              {badge}
+            </span>
+          )}
+          {activeActual && !badge && <ChevronRight className="h-3 w-3 opacity-50" />}
+        </button>
+      </Link>
+    );
+  };
+
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-2.5 px-4 py-5 border-b border-border/40 shrink-0">
+      <div className="flex items-center gap-2.5 px-4 py-[18px] border-b border-border/40 shrink-0">
         <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
           <Zap className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
         </div>
-        <span className="text-lg font-black tracking-tight text-foreground">SPARK</span>
+        <span className="text-[17px] font-black tracking-tight text-foreground">SPARK</span>
+        <span className="ml-auto text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">OS</span>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto scrollbar-thin">
-        <div>
+      <nav className="flex-1 px-2.5 py-3 overflow-y-auto scrollbar-thin space-y-4">
+
+        <div className="space-y-0.5">
           <Link href="/">
-            <button className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-              location === "/"
-                ? "bg-primary/15 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+            <button className={`w-full flex items-center gap-2.5 px-3 py-[7px] rounded-lg text-[13px] font-medium transition-all ${
+              location === "/" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
             }`}>
-              <LayoutDashboard className="h-4 w-4 shrink-0" />
+              <LayoutDashboard className="h-[15px] w-[15px] shrink-0" />
               Dashboard
-              {location === "/" && <ChevronRight className="ml-auto h-3 w-3 opacity-60" />}
+              {location === "/" && <ChevronRight className="ml-auto h-3 w-3 opacity-50" />}
+            </button>
+          </Link>
+
+          <Link href="/command">
+            <button className={`w-full flex items-center gap-2.5 px-3 py-[7px] rounded-xl text-[13px] font-semibold transition-all border ${
+              location === "/command"
+                ? "bg-primary/20 text-primary border-primary/30"
+                : "border-primary/20 bg-primary/8 text-primary hover:bg-primary/15"
+            }`}>
+              <Zap className="h-[15px] w-[15px] shrink-0" />
+              Command Center
+              <span className="ml-auto text-[9px] font-bold uppercase tracking-wider bg-primary/20 text-primary px-1.5 py-0.5 rounded">
+                AI
+              </span>
             </button>
           </Link>
         </div>
 
         {sections.map((section) => (
           <div key={section.label}>
-            <div className="px-3 mb-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+            <div className="px-3 mb-1">
+              <span className="text-[9.5px] font-bold uppercase tracking-[0.12em] text-muted-foreground/45">
                 {section.label}
               </span>
             </div>
             <div className="space-y-0.5">
-              {section.items.map((item) => {
-                const isActive = location === item.href;
-                return (
-                  <Link key={item.href} href={item.href}>
-                    <button className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
-                      isActive
-                        ? "bg-primary/15 text-primary font-medium"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                    }`}>
-                      <item.icon className="h-4 w-4 shrink-0" />
-                      <span className="flex-1 text-left">{item.label}</span>
-                      {item.soon && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/40 bg-white/5 px-1.5 py-0.5 rounded">
-                          Soon
-                        </span>
-                      )}
-                      {isActive && !item.soon && <ChevronRight className="h-3 w-3 opacity-60" />}
-                    </button>
-                  </Link>
-                );
-              })}
+              {section.items.map((item) => navLink(item.href, item.label, item.icon, item.badge))}
             </div>
           </div>
         ))}
       </nav>
 
-      <div className="px-3 pb-4 pt-2 border-t border-border/40 space-y-0.5 shrink-0">
+      <div className="px-2.5 pb-3 pt-2 border-t border-border/40 space-y-0.5 shrink-0">
         <Link href="/pricing">
-          <button className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
-            location === "/pricing"
-              ? "bg-primary/15 text-primary font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+          <button className={`w-full flex items-center gap-2.5 px-3 py-[7px] rounded-lg text-[13px] transition-all ${
+            location === "/pricing" ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
           }`}>
-            <Zap className="h-4 w-4 shrink-0" />
-            Pricing
+            <Crown className="h-[15px] w-[15px] shrink-0" />
+            Upgrade to Pro
           </button>
         </Link>
         <Link href="/settings">
-          <button className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
-            location === "/settings"
-              ? "bg-primary/15 text-primary font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+          <button className={`w-full flex items-center gap-2.5 px-3 py-[7px] rounded-lg text-[13px] transition-all ${
+            location === "/settings" ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
           }`}>
-            <Settings className="h-4 w-4 shrink-0" />
+            <Settings className="h-[15px] w-[15px] shrink-0" />
             Settings
           </button>
         </Link>
@@ -187,24 +207,20 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-[100dvh] flex bg-background text-foreground dark overflow-x-hidden">
-      <aside className="hidden md:flex flex-col w-60 shrink-0 border-r border-border/40 bg-card/30 fixed top-0 left-0 h-screen z-30">
+      <aside className="hidden md:flex flex-col w-60 shrink-0 border-r border-border/40 bg-[hsl(0_0%_5%)] fixed top-0 left-0 h-screen z-30">
         <SidebarContent />
       </aside>
 
       {open && (
-        <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setOpen(false)} />
       )}
 
-      <aside className={`fixed top-0 left-0 h-screen w-[260px] z-50 bg-[hsl(0_0%_6%)] border-r border-border/40 md:hidden transition-transform duration-300 ease-in-out ${
+      <aside className={`fixed top-0 left-0 h-screen w-[260px] z-50 bg-[hsl(0_0%_5%)] border-r border-border/40 md:hidden transition-transform duration-300 ease-in-out ${
         open ? "translate-x-0" : "-translate-x-full"
       }`}>
         <button
           onClick={() => setOpen(false)}
-          className="absolute top-4 right-4 h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors z-10"
-          aria-label="Close sidebar"
+          className="absolute top-4 right-4 h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 z-10"
         >
           <X className="h-4 w-4" />
         </button>
@@ -215,8 +231,7 @@ export function Layout({ children }: LayoutProps) {
         <header className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 h-14 bg-background/95 backdrop-blur border-b border-border/40">
           <button
             onClick={() => setOpen(true)}
-            className="h-9 w-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
-            aria-label="Open sidebar"
+            className="h-9 w-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5"
           >
             <Menu className="h-5 w-5" />
           </button>

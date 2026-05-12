@@ -30,6 +30,10 @@ import Performance from "@/pages/performance";
 import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";
 import Trust from "@/pages/trust";
+import Campaigns from "@/pages/campaigns";
+import Command from "@/pages/command";
+import Agents from "@/pages/agents";
+import Onboarding from "@/pages/onboarding";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +68,10 @@ function Router() {
       <Route path="/settings" component={Settings} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/trust" component={Trust} />
+      <Route path="/campaigns" component={Campaigns} />
+      <Route path="/command" component={Command} />
+      <Route path="/agents" component={Agents} />
+      <Route path="/onboarding" component={Onboarding} />
       <Route component={NotFound} />
     </Switch>
   );

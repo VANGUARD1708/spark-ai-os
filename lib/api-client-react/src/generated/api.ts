@@ -20,6 +20,8 @@ import type {
   AnalyticsResponse,
   AssetsResponse,
   Campaign,
+  CommandBody,
+  CommandResponse,
   CreateCampaignBody,
   DashboardStats,
   DeleteResponse,
@@ -2797,4 +2799,90 @@ export const useDeleteCampaign = <
   TContext
 > => {
   return useMutation(getDeleteCampaignMutationOptions(options));
+};
+
+/**
+ * @summary Run a SPARK command
+ */
+export const getRunCommandUrl = () => {
+  return `/api/spark/command`;
+};
+
+export const runCommand = async (
+  commandBody: CommandBody,
+  options?: RequestInit,
+): Promise<CommandResponse> => {
+  return customFetch<CommandResponse>(getRunCommandUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(commandBody),
+  });
+};
+
+export const getRunCommandMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof runCommand>>,
+    TError,
+    { data: BodyType<CommandBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof runCommand>>,
+  TError,
+  { data: BodyType<CommandBody> },
+  TContext
+> => {
+  const mutationKey = ["runCommand"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof runCommand>>,
+    { data: BodyType<CommandBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return runCommand(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RunCommandMutationResult = NonNullable<
+  Awaited<ReturnType<typeof runCommand>>
+>;
+export type RunCommandMutationBody = BodyType<CommandBody>;
+export type RunCommandMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Run a SPARK command
+ */
+export const useRunCommand = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof runCommand>>,
+    TError,
+    { data: BodyType<CommandBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof runCommand>>,
+  TError,
+  { data: BodyType<CommandBody> },
+  TContext
+> => {
+  return useMutation(getRunCommandMutationOptions(options));
 };

@@ -2,7 +2,7 @@ import { Layout } from "@/components/layout";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGenerateTikTokScript } from "@workspace/api-client-react";
+import { useGenerateTikTokScript, useSaveScript, getGetSavedScriptsQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,9 +10,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Video, Hash, Copy, PlayCircle, Activity, ShoppingBag, ArrowRight } from "lucide-react";
+import { Loader2, Video, Hash, Copy, PlayCircle, Activity, ShoppingBag, ArrowRight, Bookmark, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   productTitle: z.string().min(2, "Product title is required").max(100),
@@ -28,7 +30,10 @@ const getParam = (key: string) => {
 
 export default function Scripts() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const generateScripts = useGenerateTikTokScript();
+  const saveScript = useSaveScript();
+  const [saved, setSaved] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,19 +46,38 @@ export default function Scripts() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    setSaved(false);
     generateScripts.mutate({ data: values }, {
-      onSuccess: () => {
-        toast({ title: "Scripts generated successfully!" });
-      },
-      onError: () => {
-        toast({ title: "Failed to generate scripts", variant: "destructive" });
-      }
+      onSuccess: () => toast({ title: "Scripts generated successfully!" }),
+      onError: () => toast({ title: "Failed to generate scripts", variant: "destructive" }),
     });
   };
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: "Copied to clipboard!" });
+  };
+
+  const handleSave = () => {
+    const scriptsData = generateScripts.data;
+    if (!scriptsData) return;
+    saveScript.mutate(
+      {
+        data: {
+          productTitle: form.getValues("productTitle"),
+          style: form.getValues("style"),
+          data: scriptsData as any,
+        }
+      },
+      {
+        onSuccess: () => {
+          setSaved(true);
+          toast({ title: "Scripts saved to Asset Command Center" });
+          queryClient.invalidateQueries({ queryKey: getGetSavedScriptsQueryKey() });
+        },
+        onError: () => toast({ title: "Failed to save scripts", variant: "destructive" }),
+      }
+    );
   };
 
   const getScoreColor = (score: number) => {
@@ -171,6 +195,20 @@ export default function Scripts() {
               </div>
             ) : scriptsData && scriptsData.scripts.length > 0 ? (
               <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">{scriptsData.scripts.length} scripts generated</p>
+                  <Button
+                    variant={saved ? "secondary" : "outline"}
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={saveScript.isPending || saved}
+                    className={saved ? "text-green-400 border-green-400/30" : ""}
+                  >
+                    {saved ? <Check className="h-3.5 w-3.5 mr-2 text-green-400" /> : <Bookmark className="h-3.5 w-3.5 mr-2" />}
+                    {saved ? "Saved" : saveScript.isPending ? "Saving…" : "Save All Scripts"}
+                  </Button>
+                </div>
+
                 {scriptsData.scripts.map((script, i) => (
                   <Card key={i} className="overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300">
                     <CardHeader className="bg-secondary/10 pb-4 border-b border-border/50">

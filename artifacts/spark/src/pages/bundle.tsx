@@ -2,7 +2,7 @@ import { Layout } from "@/components/layout";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGenerateBundle, type GenerateBundleBodyAngle } from "@workspace/api-client-react";
+import { useGenerateBundle, useSaveBundle, getGetSavedBundlesQueryKey, type GenerateBundleBodyAngle } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,11 +10,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, CheckCircle2, ArrowRight, Video, ShoppingBag } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Loader2, Package, CheckCircle2, ArrowRight, Video, ShoppingBag, Save, Check, Bookmark } from "lucide-react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   productTitle: z.string().min(2, "Product title is required").max(100),
@@ -25,7 +26,10 @@ const formSchema = z.object({
 
 export default function Bundle() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const generateBundle = useGenerateBundle();
+  const saveBundle = useSaveBundle();
+  const [saved, setSaved] = useState(false);
 
   const getParam = (key: string) => {
     const params = new URLSearchParams(window.location.search);
@@ -45,14 +49,35 @@ export default function Bundle() {
   const productTitle = form.watch("productTitle");
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    setSaved(false);
     generateBundle.mutate({ data: values }, {
-      onSuccess: () => {
-        toast({ title: "Bundle generated successfully!" });
-      },
-      onError: () => {
-        toast({ title: "Failed to generate bundle", variant: "destructive" });
-      }
+      onSuccess: () => toast({ title: "Bundle generated successfully!" }),
+      onError: () => toast({ title: "Failed to generate bundle", variant: "destructive" }),
     });
+  };
+
+  const handleSave = () => {
+    const bundle = generateBundle.data;
+    if (!bundle) return;
+    saveBundle.mutate(
+      {
+        data: {
+          productTitle: form.getValues("productTitle"),
+          offerName: bundle.offerName,
+          headline: bundle.headline,
+          price: bundle.price,
+          data: bundle as any,
+        }
+      },
+      {
+        onSuccess: () => {
+          setSaved(true);
+          toast({ title: "Bundle saved to Asset Command Center" });
+          queryClient.invalidateQueries({ queryKey: getGetSavedBundlesQueryKey() });
+        },
+        onError: () => toast({ title: "Failed to save bundle", variant: "destructive" }),
+      }
+    );
   };
 
   const bundle = generateBundle.data;
@@ -224,12 +249,10 @@ export default function Bundle() {
                     <div className="inline-block px-4 py-2 rounded-full bg-background border border-border/50 text-sm font-medium mb-6">
                       {bundle.guarantee}
                     </div>
-
                     <div className="flex flex-col items-center justify-center mb-8">
                       <div className="text-muted-foreground line-through text-2xl mb-1">{bundle.strikethroughPrice}</div>
                       <div className="text-6xl font-black text-primary drop-shadow-sm">{bundle.price}</div>
                     </div>
-
                     <Button size="lg" className="w-full md:w-auto text-lg h-14 px-12 font-bold animate-in zoom-in duration-500 delay-300">
                       {bundle.callToAction} <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
@@ -237,7 +260,17 @@ export default function Bundle() {
                 </CardContent>
 
                 <CardFooter className="border-t border-border/40 bg-card p-5 flex flex-col sm:flex-row gap-3">
-                  <p className="text-sm text-muted-foreground sm:mr-auto">Next step:</p>
+                  <Button
+                    variant={saved ? "secondary" : "outline"}
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={saveBundle.isPending || saved}
+                    className={saved ? "text-green-400 border-green-400/30" : ""}
+                  >
+                    {saved ? <Check className="h-4 w-4 mr-2 text-green-400" /> : <Bookmark className="h-4 w-4 mr-2" />}
+                    {saved ? "Saved" : saveBundle.isPending ? "Saving…" : "Save Bundle"}
+                  </Button>
+                  <p className="text-sm text-muted-foreground sm:mr-auto hidden sm:block">Next step:</p>
                   <Link href={scriptsLink} className="w-full sm:w-auto">
                     <Button variant="outline" className="w-full group/btn" size="sm">
                       <Video className="h-4 w-4 mr-2" />

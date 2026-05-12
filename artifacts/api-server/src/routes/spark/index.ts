@@ -13,6 +13,7 @@ import { assetsHandler } from "./assets";
 import { analyticsHandler } from "./analytics";
 import { campaignsHandlers } from "./campaigns";
 import { statsHandler } from "./stats";
+import { commandHandler } from "./command";
 
 const sparkRouter = Router();
 
@@ -56,6 +57,9 @@ sparkRouter.get("/spark/assets", assetsHandler);
 // ─── Analytics (Phase 2) ─────────────────────────────────────
 sparkRouter.get("/spark/stats", statsHandler);
 sparkRouter.get("/spark/analytics", analyticsHandler);
+
+// ─── Command Center ───────────────────────────────────────────
+sparkRouter.post("/spark/command", commandHandler);
 
 // ─── Campaigns (Phase 3) ─────────────────────────────────────
 sparkRouter.get("/spark/campaigns", campaignsHandlers.list);

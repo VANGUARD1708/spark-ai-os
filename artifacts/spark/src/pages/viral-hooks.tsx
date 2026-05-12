@@ -2,16 +2,17 @@ import { Layout } from "@/components/layout";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGenerateViralHooks } from "@workspace/api-client-react";
+import { useGenerateViralHooks, useSaveHooks, getGetSavedHooksQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Flame, Copy, ArrowRight, Video } from "lucide-react";
+import { Loader2, Flame, Copy, ArrowRight, Video, Bookmark, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   productTitle: z.string().min(2, "Product or topic is required").max(100),
@@ -43,8 +44,11 @@ const HOOK_BADGE_COLORS: Record<string, string> = {
 
 export default function ViralHooks() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const generateHooks = useGenerateViralHooks();
+  const saveHooks = useSaveHooks();
   const [filterType, setFilterType] = useState<string>("all");
+  const [saved, setSaved] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,20 +56,41 @@ export default function ViralHooks() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    setSaved(false);
     generateHooks.mutate({ data: values }, {
       onSuccess: () => {
         setFilterType("all");
         toast({ title: "Hooks generated!" });
       },
-      onError: () => {
-        toast({ title: "Failed to generate hooks", variant: "destructive" });
-      }
+      onError: () => toast({ title: "Failed to generate hooks", variant: "destructive" }),
     });
   };
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: "Copied to clipboard!" });
+  };
+
+  const handleSave = () => {
+    const hooksData = generateHooks.data;
+    if (!hooksData) return;
+    saveHooks.mutate(
+      {
+        data: {
+          productTitle: form.getValues("productTitle"),
+          hookType: form.getValues("hookType"),
+          data: hooksData as any,
+        }
+      },
+      {
+        onSuccess: () => {
+          setSaved(true);
+          toast({ title: "Hooks saved to Asset Command Center" });
+          queryClient.invalidateQueries({ queryKey: getGetSavedHooksQueryKey() });
+        },
+        onError: () => toast({ title: "Failed to save hooks", variant: "destructive" }),
+      }
+    );
   };
 
   const hooksData = generateHooks.data;
@@ -175,20 +200,32 @@ export default function ViralHooks() {
               </div>
             ) : hooks.length > 0 ? (
               <div className="space-y-6">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {["all", ...Object.keys(groupedByType(hooks))].filter((v, i, a) => a.indexOf(v) === i).map(type => (
-                    <button
-                      key={type}
-                      onClick={() => setFilterType(type)}
-                      className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${
-                        filterType === type
-                          ? "border-primary bg-primary/15 text-primary"
-                          : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground"
-                      }`}
-                    >
-                      {type === "all" ? `All (${hooks.length})` : `${type.charAt(0).toUpperCase() + type.slice(1)} (${groupedByType(hooks)[type]?.length || 0})`}
-                    </button>
-                  ))}
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {["all", ...Object.keys(groupedByType(hooks))].filter((v, i, a) => a.indexOf(v) === i).map(type => (
+                      <button
+                        key={type}
+                        onClick={() => setFilterType(type)}
+                        className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${
+                          filterType === type
+                            ? "border-primary bg-primary/15 text-primary"
+                            : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground"
+                        }`}
+                      >
+                        {type === "all" ? `All (${hooks.length})` : `${type.charAt(0).toUpperCase() + type.slice(1)} (${groupedByType(hooks)[type]?.length || 0})`}
+                      </button>
+                    ))}
+                  </div>
+                  <Button
+                    variant={saved ? "secondary" : "outline"}
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={saveHooks.isPending || saved}
+                    className={saved ? "text-green-400 border-green-400/30 shrink-0" : "shrink-0"}
+                  >
+                    {saved ? <Check className="h-3.5 w-3.5 mr-2 text-green-400" /> : <Bookmark className="h-3.5 w-3.5 mr-2" />}
+                    {saved ? "Saved" : saveHooks.isPending ? "Saving…" : "Save Hooks"}
+                  </Button>
                 </div>
 
                 {Object.entries(groupedByType(filteredHooks)).map(([type, typeHooks]) => (
