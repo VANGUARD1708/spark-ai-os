@@ -115,14 +115,18 @@ export default function Pricing() {
                 </div>
               ))}
               <div className="pt-3 space-y-2">
-                <Button className="w-full font-bold h-11" disabled>
-                  <Crown className="h-4 w-4 mr-2" />
-                  Upgrade to Pro — $29/mo
-                </Button>
-                <Button variant="ghost" className="w-full text-sm text-muted-foreground" disabled>
-                  Annual plan — $197/year
-                </Button>
-                <p className="text-center text-xs text-muted-foreground">Billing integration coming soon</p>
+                <a href="/sign-up">
+                  <Button className="w-full font-bold h-11">
+                    <Crown className="h-4 w-4 mr-2" />
+                    Get Started — $29/mo
+                  </Button>
+                </a>
+                <a href="/sign-up">
+                  <Button variant="ghost" className="w-full text-sm text-muted-foreground">
+                    Annual plan — $197/year (save $151)
+                  </Button>
+                </a>
+                <p className="text-center text-xs text-muted-foreground">Secure checkout · Cancel anytime</p>
               </div>
             </CardContent>
           </Card>

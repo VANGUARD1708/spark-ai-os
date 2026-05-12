@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
+  <rect width="32" height="32" x="0" y="4" rx="8" fill="hsl(82,100%,55%)" />
+  <path d="M16 10 L10 20 L15 20 L9 30 L22 17 L17 17 L24 10 Z" fill="black" stroke="none"/>
+  <text x="38" y="27" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="900" letter-spacing="-0.5" fill="white">SPARK</text>
+</svg>

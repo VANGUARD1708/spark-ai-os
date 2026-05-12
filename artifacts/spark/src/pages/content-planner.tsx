@@ -120,10 +120,14 @@ export default function ContentPlanner() {
           </div>
         )}
 
-        <div className="p-4 rounded-xl border border-border/40 bg-card/20 text-center">
+        <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            Full calendar sync, reminders, and content streaks coming in Phase 2.
+            Advanced calendar sync, AI timing optimization, and content streaks are available in{" "}
+            <span className="text-primary font-medium">Pro Labs</span>.
           </p>
+          <a href="/pricing" className="shrink-0">
+            <Button size="sm" variant="outline" className="text-xs h-7">Unlock Pro</Button>
+          </a>
         </div>
       </div>
     </Layout>

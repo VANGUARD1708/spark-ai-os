@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import {
   Search, Palette, FileText, TrendingUp, BarChart2, ShoppingCart,
-  Bot, Zap, ArrowRight, CheckCircle2, Clock, Sparkles
+  Bot, Zap, ArrowRight, CheckCircle2, Clock, Sparkles, Crown
 } from "lucide-react";
 
 interface Agent {
@@ -210,18 +210,26 @@ export default function Agents() {
                       </div>
                     ))}
                   </div>
-                  <Link href={agent.primaryHref} className="block">
-                    <Button
-                      variant={agent.status === "active" ? "default" : "outline"}
-                      size="sm"
-                      className="w-full"
-                      disabled={agent.status === "labs"}
-                    >
-                      <agent.icon className="h-3.5 w-3.5 mr-2" />
-                      {agent.status === "labs" ? "Coming Soon" : agent.primaryLabel}
-                      {agent.status !== "labs" && <ArrowRight className="h-3.5 w-3.5 ml-auto" />}
-                    </Button>
-                  </Link>
+                  {agent.status === "labs" ? (
+                    <a href="/pricing" className="block">
+                      <Button variant="outline" size="sm" className="w-full text-yellow-400 border-yellow-400/30 hover:bg-yellow-400/5">
+                        <Crown className="h-3.5 w-3.5 mr-2" />
+                        Unlock with Pro
+                      </Button>
+                    </a>
+                  ) : (
+                    <Link href={agent.primaryHref} className="block">
+                      <Button
+                        variant={agent.status === "active" ? "default" : "outline"}
+                        size="sm"
+                        className="w-full"
+                      >
+                        <agent.icon className="h-3.5 w-3.5 mr-2" />
+                        {agent.primaryLabel}
+                        <ArrowRight className="h-3.5 w-3.5 ml-auto" />
+                      </Button>
+                    </Link>
+                  )}
                 </CardContent>
               </Card>
             );

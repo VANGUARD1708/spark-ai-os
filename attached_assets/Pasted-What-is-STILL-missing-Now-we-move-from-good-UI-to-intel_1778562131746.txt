@@ -1,0 +1,332 @@
+What is STILL missing
+
+Now we move from:
+
+“good UI”
+
+to:
+
+“intelligent product system.”
+
+⸻
+
+1. AUTH SYSTEM IS NOT REAL YET
+
+The biggest issue visible:
+
+“Auth coming”
+
+This breaks trust instantly.
+
+You NEED:
+
+Google Sign-In immediately.
+
+Because:
+
+* users need identity
+* billing depends on identity
+* memory depends on identity
+* Pro depends on identity
+* saved assets depend on identity
+
+Without auth:
+SPARK feels temporary.
+
+⸻
+
+2. SETTINGS PAGE NEEDS INTELLIGENCE
+
+Right now settings feels:
+
+static.
+
+2030 version should feel:
+
+personalized.
+
+Add:
+
+Account Intelligence
+
+Show:
+
+* generations used
+* trends scanned
+* top-performing niche
+* favorite tools
+* AI usage summary
+
+Example:
+
+“Your best-performing content category this week: Wellness.”
+
+That makes settings feel alive.
+
+⸻
+
+3. BILLING SECTION NEEDS DEPTH
+
+Current:
+
+* free plan
+* limits
+* upgrade button
+
+Good start.
+
+But add:
+
+usage visibility.
+
+Show:
+
+* ideas used today
+* scripts remaining
+* scan credits
+* automation usage
+* AI forecast credits
+
+Example:
+
+Trend scans: 2/5 used today
+
+This makes Pro upgrades logical.
+
+⸻
+
+4. API KEYS SECTION NEEDS CLARITY
+
+Right now:
+“Requires Pro”
+
+Too passive.
+
+Better:
+
+Spark API Access
+
+Build custom workflows and connect Spark to your tools.
+
+Buttons:
+
+* View Documentation
+* Unlock API Access
+* See Example Integrations
+
+Then show:
+
+* Zapier
+* Shopify
+* Discord
+* Notion
+* Google Sheets
+
+This makes API access feel valuable.
+
+⸻
+
+5. SCHEDULING PAGE STILL FEELS PARTIALLY STATIC
+
+This line hurts the futuristic feeling:
+
+“Coming in Phase 2”
+
+Remove this style completely.
+
+Instead:
+
+Better version:
+
+“Advanced calendar sync and AI timing optimization are available in Pro Labs.”
+
+BIG difference psychologically.
+
+⸻
+
+6. SCHEDULING NEEDS REAL FUNCTIONS
+
+Right now it looks mostly visual.
+
+Add:
+
+* create event
+* auto-schedule
+* connect social account
+* suggest posting times
+* AI posting recommendations
+
+Even lightweight versions.
+
+⸻
+
+7. THERE IS NO AI PRESENCE YET
+
+Critical issue.
+
+SPARK still feels like:
+
+a dashboard
+
+instead of:
+
+an AI operating system.
+
+Add:
+
+* floating AI assistant
+* “Ask Spark”
+* recommendations
+* live tips
+* contextual guidance
+
+Example:
+
+“Your audience performs better at 7PM. Schedule now?”
+
+That changes the whole feeling.
+
+⸻
+
+8. NO MEMORY FEELING YET
+
+The app still does not feel like it remembers the user.
+
+You need:
+
+persistent intelligence.
+
+Examples:
+
+* recently generated hooks
+* saved brands
+* recurring niches
+* previous launches
+* reused campaigns
+
+SPARK should say:
+
+“Based on your previous skincare campaigns…”
+
+That creates:
+
+attachment.
+
+⸻
+
+9. EMPTY SPACE PROBLEM
+
+Several sections still have:
+
+* too much empty padding
+* low information density
+
+You need:
+
+* insights
+* activity
+* previews
+* suggestions
+* recent work
+* AI notices
+
+The screen should always feel:
+
+active.
+
+⸻
+
+10. THE MOST IMPORTANT THING MISSING
+
+THE FEELING OF MOMENTUM
+
+SPARK should always make users feel:
+
+* progress
+* movement
+* intelligence
+* opportunity
+
+Right now:
+some screens still feel:
+
+“UI waiting for functionality.”
+
+Instead:
+they should feel:
+
+“AI already helping me.”
+
+⸻
+
+WHAT YOU SHOULD DO NEXT
+
+PRIORITY 1
+
+Real authentication.
+
+* Google login
+* sessions
+* user accounts
+* saved data
+
+⸻
+
+PRIORITY 2
+
+Real billing system.
+
+* Stripe
+* Pro unlock
+* usage tracking
+
+⸻
+
+PRIORITY 3
+
+Remove ALL:
+
+* “coming soon”
+* “phase 2”
+* “auth coming”
+
+Replace with:
+
+* working previews
+* limited functionality
+* AI explanations
+* Pro unlock paths
+
+⸻
+
+PRIORITY 4
+
+Add:
+
+AI intelligence layer
+
+Every page needs:
+
+* recommendations
+* guidance
+* suggestions
+* memory
+* context
+
+⸻
+
+YOUR BIGGEST OPPORTUNITY
+
+You are VERY close to transitioning from:
+
+“cool AI project”
+
+to:
+
+“serious AI SaaS platform.”
+
+The UI foundation is already strong.
+
+Now the missing layer is:
+
+intelligence + circulation + identity + memory.

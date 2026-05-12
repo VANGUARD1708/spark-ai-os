@@ -1,5 +1,6 @@
 import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
+import { SparkAI } from "./spark-ai";
 import {
   Zap, LayoutDashboard, Lightbulb, TrendingUp, Trophy,
   Package, Palette, Video, Flame, BarChart2, FlaskConical,
@@ -247,6 +248,7 @@ export function Layout({ children }: LayoutProps) {
           {children}
         </main>
       </div>
+      <SparkAI />
     </div>
   );
 }
