@@ -1,0 +1,570 @@
+SPARK SIMPLE ULTRA BLUEPRINT
+
+Easy-to-Understand Build Plan
+
+This version is written in simple product language so:
+
+* developers understand it
+* designers understand it
+* future team members understand it
+* building becomes easier
+
+⸻
+
+1. WHAT SPARK IS
+
+SPARK is:
+
+A smart app that helps people build and grow online businesses using AI.
+
+The app should help users:
+
+* find ideas
+* build brands
+* create content
+* launch campaigns
+* grow sales
+* track performance
+
+all in one place.
+
+⸻
+
+2. HOW THE APP SHOULD FEEL
+
+SPARK should feel:
+
+* simple
+* intelligent
+* modern
+* fast
+* helpful
+* alive
+
+No empty pages.
+No confusing screens.
+Every page should help the user do something.
+
+⸻
+
+3. LOGIN SYSTEM
+
+Users should login with:
+
+* Google account
+
+Later add:
+
+* Apple login
+* Email login
+
+⸻
+
+4. USER ACCOUNT SYSTEM
+
+Every user account should save:
+
+* brands
+* ideas
+* campaigns
+* hooks
+* generated content
+* files
+* settings
+
+The app should remember the user’s work.
+
+⸻
+
+5. FREE VS PRO
+
+FREE USERS
+
+Free users should still enjoy the app.
+
+They can:
+
+* generate limited content
+* scan limited trends
+* save limited assets
+* test some beta/labs tools
+
+Purpose:
+Let them experience the product.
+
+⸻
+
+PRO USERS
+
+Pro users unlock:
+
+* unlimited generations
+* advanced AI tools
+* automation
+* forecasting
+* scheduling
+* connected accounts
+* advanced analytics
+
+Purpose:
+Make Pro feel powerful.
+
+⸻
+
+6. PAYMENT SYSTEM
+
+Use:
+
+Stripe
+
+Stripe handles:
+
+* subscriptions
+* renewals
+* failed payments
+* invoices
+
+Flow:
+User upgrades → pays → Pro unlocks automatically.
+
+⸻
+
+7. MAIN APP STRUCTURE
+
+The app should have these main sections:
+
+⸻
+
+DISCOVER
+
+Help users find opportunities.
+
+Trend Radar
+
+Shows:
+
+* trending niches
+* rising topics
+* viral opportunities
+
+User actions:
+
+* save trend
+* build brand
+* create hooks
+
+⸻
+
+Winning Products
+
+Shows:
+
+* products with demand
+* saturation level
+* profit potential
+
+User actions:
+
+* build offer
+* create campaign
+* save product
+
+⸻
+
+Market Signals
+
+Shows:
+
+* audience behavior
+* emotional trends
+* market changes
+
+User actions:
+
+* create marketing angle
+* generate content
+
+⸻
+
+BUILD
+
+Help users create businesses.
+
+Brand Builder
+
+Creates:
+
+* business names
+* slogans
+* tone
+* brand style
+
+⸻
+
+Bundle Builder
+
+Creates:
+
+* product bundles
+* pricing suggestions
+* value offers
+
+⸻
+
+Offer Builder
+
+Creates:
+
+* offers
+* upsells
+* bonuses
+* pricing strategy
+
+⸻
+
+Landing Pages
+
+Creates:
+
+* product pages
+* sales pages
+* mobile layouts
+
+⸻
+
+CREATE
+
+Help users make content.
+
+Viral Hooks
+
+Creates:
+
+* hook ideas
+* emotional hooks
+* viral angles
+
+⸻
+
+TikTok Scripts
+
+Creates:
+
+* short-form scripts
+* storytelling scripts
+* viral structures
+
+⸻
+
+Ad Generator
+
+Creates:
+
+* ads
+* CTAs
+* ad angles
+
+⸻
+
+Email/SMS
+
+Creates:
+
+* email campaigns
+* cart recovery
+* retention messages
+
+⸻
+
+LAUNCH
+
+Help users publish and organize.
+
+Campaign Composer
+
+Creates:
+
+* campaign plans
+* launch strategy
+* content organization
+
+⸻
+
+Scheduling
+
+Allows:
+
+* content scheduling
+* posting calendar
+* reminders
+
+⸻
+
+Automations
+
+Allows:
+
+* automatic workflows
+* automatic posting
+* AI actions
+
+⸻
+
+SCALE
+
+Help users grow faster.
+
+Analytics
+
+Shows:
+
+* traffic
+* conversions
+* revenue
+* top content
+
+⸻
+
+A/B Testing
+
+Tests:
+
+* different hooks
+* different offers
+* different ads
+
+Shows winner automatically.
+
+⸻
+
+Recommendations
+
+AI gives:
+
+* growth advice
+* campaign suggestions
+* optimization tips
+
+⸻
+
+Revenue Forecast
+
+Predicts:
+
+* possible revenue
+* future growth
+* risk areas
+
+⸻
+
+8. EVERY PAGE SHOULD WORK
+
+No fake pages.
+No “coming soon.”
+No dead screens.
+
+Every page must:
+
+* generate something
+* analyze something
+* recommend something
+* help the user move forward
+
+⸻
+
+9. EMPTY PAGE SYSTEM
+
+Never show:
+
+* blank dashboards
+* empty feeds
+* “no data”
+
+Instead show:
+
+* examples
+* previews
+* templates
+* sample results
+* quick-start buttons
+
+Example:
+Trend Radar should show example trends even before user scans anything.
+
+⸻
+
+10. BETA AND LABS SYSTEM
+
+BETA
+
+Working features still improving.
+
+Examples:
+
+* Trend Radar
+* Scheduling
+* Offer Builder
+
+⸻
+
+LABS
+
+Experimental advanced features.
+
+Examples:
+
+* Revenue Forecast
+* AI Recommendations
+* Automations
+
+Labs should still work.
+Just more advanced.
+
+⸻
+
+11. PRO LIMITS SYSTEM
+
+Free users should see value.
+
+Examples:
+
+* 3 scans/day
+* 5 saved assets
+* 2 exports
+
+Then show:
+
+“Unlock unlimited access with Pro.”
+
+This encourages upgrades naturally.
+
+⸻
+
+12. SECURITY SYSTEM
+
+Very important.
+
+SPARK should protect:
+
+* accounts
+* payments
+* AI systems
+
+Add:
+
+* secure login
+* rate limits
+* suspicious activity detection
+* anti-spam protection
+* session tracking
+* admin monitoring
+
+⸻
+
+13. USER ACTIVITY MONITORING
+
+Track:
+
+* unusual behavior
+* spam generations
+* account sharing
+* abuse attempts
+* failed logins
+
+System actions:
+
+* warnings
+* cooldowns
+* temporary restrictions
+
+⸻
+
+14. MEMORY SYSTEM
+
+SPARK should remember:
+
+* user brands
+* best hooks
+* previous campaigns
+* audience type
+* generated assets
+
+This makes the app smarter over time.
+
+⸻
+
+15. NOTIFICATION SYSTEM
+
+Bring users back.
+
+Examples:
+
+* trend alerts
+* campaign reminders
+* weekly growth summaries
+* AI recommendations
+
+⸻
+
+16. ASSETS SYSTEM
+
+Everything generated should save into:
+
+* Assets
+* Campaigns
+* Brands
+* Files
+
+Users should never lose work.
+
+⸻
+
+17. FUTURE AI SYSTEM
+
+Long-term goal:
+
+User types:
+
+“Build me a skincare brand.”
+
+SPARK:
+
+* finds opportunity
+* creates brand
+* creates content
+* creates campaign
+* creates launch plan
+
+inside one flow.
+
+⸻
+
+18. SIMPLE PRODUCT RULE
+
+Every page should answer:
+
+“What can the user do here immediately?”
+
+If the answer is “nothing,” the page is incomplete.
+
+⸻
+
+19. THE MOST IMPORTANT THING
+
+SPARK should not feel like:
+
+* separate tools
+* random generators
+* disconnected pages
+
+It should feel like:
+
+one intelligent business system.
+
+⸻
+
+20. FINAL SIMPLE POSITIONING
+
+SPARK is:
+
+“An AI-powered app that helps people build and grow online businesses faster.”
