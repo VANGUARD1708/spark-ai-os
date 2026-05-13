@@ -1,28 +1,74 @@
 import { Layout } from "@/components/layout";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useGenerateBundle, useSaveBundle, getGetSavedBundlesQueryKey, type GenerateBundleBodyAngle } from "@workspace/api-client-react";
+import { AIInput, type AIField } from "@/components/ai-input";
+import { useGenerateBundle, useSaveBundle, getGetSavedBundlesQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, CheckCircle2, ArrowRight, Video, ShoppingBag, Save, Check, Bookmark } from "lucide-react";
+import { Package, CheckCircle2, ArrowRight, Video, ShoppingBag, Check, Bookmark } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 
-const formSchema = z.object({
-  productTitle: z.string().min(2, "Product title is required").max(100),
-  productDescription: z.string().min(10, "Description is required").max(500),
-  targetAudience: z.string().min(2, "Target audience is required").max(100),
-  angle: z.enum(["pain", "desire", "transformation"] as const),
-});
+const EXAMPLES = [
+  "A 30-day fitness transformation guide for busy moms who want to lose weight without going to the gym",
+  "A budgeting system for college students who are always broke and don't know where their money goes",
+  "A dog training course for owners whose dogs won't stop barking and destroying furniture",
+  "A freelance design course for graphic designers who charge $20/hr and want to 10x their rates",
+  "A content creation starter kit for teachers who want to build a side income over summer break",
+];
+
+const getParam = (key: string) =>
+  new URLSearchParams(window.location.search).get(key) ?? "";
+
+const FIELDS: AIField[] = [
+  { key: "productTitle", label: "Product name", emoji: "📦", value: getParam("title") },
+  { key: "productDescription", label: "Description / hook", emoji: "✨", value: getParam("desc") },
+  { key: "targetAudience", label: "Audience", emoji: "👥", value: getParam("aud") },
+  {
+    key: "angle",
+    label: "Offer angle",
+    emoji: "🎯",
+    value: "transformation",
+    options: [
+      { value: "transformation", label: "Transformation — where they want to be" },
+      { value: "pain", label: "Pain — what they want to escape" },
+      { value: "desire", label: "Desire — what they want to achieve" },
+    ],
+  },
+];
+
+function extractBundleFields(text: string): Record<string, string> {
+  const lower = text.toLowerCase();
+
+  // Product title
+  const productMatch =
+    text.match(/^(?:A\s+)?([A-Za-z][\w\s,'-]{3,50}?)(?:\s+for|\s+that|\s+helping|\s+about|\.| — |,|$)/i)?.[1]?.trim() ??
+    text.trim().split(/\s+/).slice(0, 5).join(" ");
+
+  // Audience
+  const audMatch =
+    text.match(/\b(?:for|helping|targeting|aimed at)\s+([a-zA-Z][\w\s,'-]{3,50}?)(?:\s+who|\s+that|\s+to|\.|,|$)/i)?.[1]?.trim() ?? "";
+
+  // Description: after "who" or "—"
+  const descMatch =
+    text.match(/who\s+([a-zA-Z][\w\s,'-]{5,80}?)(?:\.|,|$)/i)?.[1]?.trim() ??
+    text.match(/—\s+([a-zA-Z][\w\s,'-]{5,80}?)(?:\.|,|$)/i)?.[1]?.trim() ?? "";
+
+  // Angle
+  let angle = "transformation";
+  if (/\b(pain|escape|stop|hate|never|struggle|frustrat|broke|stuck|can'?t)\b/.test(lower)) angle = "pain";
+  else if (/\b(desire|dream|want|achieve|goal|aspire|success|earn|rich)\b/.test(lower)) angle = "desire";
+  else if (/\b(transform|before.*after|change|glow.?up|journey|result|from.*to)\b/.test(lower)) angle = "transformation";
+
+  return {
+    productTitle: productMatch?.replace(/^A\s+/i, "").replace(/[.,!?]+$/, "").trim() ?? "",
+    productDescription: descMatch.replace(/[.,!?]+$/, "").trim(),
+    targetAudience: audMatch.replace(/[.,!?]+$/, "").trim(),
+    angle,
+  };
+}
 
 export default function Bundle() {
   const { toast } = useToast();
@@ -30,29 +76,25 @@ export default function Bundle() {
   const generateBundle = useGenerateBundle();
   const saveBundle = useSaveBundle();
   const [saved, setSaved] = useState(false);
+  const [lastValues, setLastValues] = useState<Record<string, string>>({});
 
-  const getParam = (key: string) => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get(key) ?? "";
-  };
+  const initialPrompt = getParam("title")
+    ? `${getParam("title")}${getParam("desc") ? " — " + getParam("desc") : ""}${getParam("aud") ? " for " + getParam("aud") : ""}`
+    : "";
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      productTitle: getParam("title"),
-      productDescription: getParam("desc"),
-      targetAudience: getParam("aud"),
-      angle: "transformation",
-    },
-  });
-
-  const productTitle = form.watch("productTitle");
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleGenerate = (values: Record<string, string>) => {
     setSaved(false);
-    generateBundle.mutate({ data: values }, {
-      onSuccess: () => toast({ title: "Bundle generated successfully!" }),
-      onError: () => toast({ title: "Failed to generate bundle", variant: "destructive" }),
+    setLastValues(values);
+    generateBundle.mutate({
+      data: {
+        productTitle: values.productTitle,
+        productDescription: values.productDescription,
+        targetAudience: values.targetAudience,
+        angle: values.angle as "pain" | "desire" | "transformation",
+      }
+    }, {
+      onSuccess: () => toast({ title: "Bundle generated!" }),
+      onError: () => toast({ title: "Couldn't generate bundle — try again.", variant: "destructive" }),
     });
   };
 
@@ -62,7 +104,7 @@ export default function Bundle() {
     saveBundle.mutate(
       {
         data: {
-          productTitle: form.getValues("productTitle"),
+          productTitle: lastValues.productTitle ?? "",
           offerName: bundle.offerName,
           headline: bundle.headline,
           price: bundle.price,
@@ -75,104 +117,35 @@ export default function Bundle() {
           toast({ title: "Bundle saved to Asset Command Center" });
           queryClient.invalidateQueries({ queryKey: getGetSavedBundlesQueryKey() });
         },
-        onError: () => toast({ title: "Failed to save bundle", variant: "destructive" }),
+        onError: () => toast({ title: "Failed to save", variant: "destructive" }),
       }
     );
   };
 
   const bundle = generateBundle.data;
 
-  const scriptsLink = productTitle
-    ? `/scripts?title=${encodeURIComponent(productTitle)}&desc=${encodeURIComponent(form.getValues("productDescription"))}&aud=${encodeURIComponent(form.getValues("targetAudience"))}`
+  const scriptsLink = lastValues.productTitle
+    ? `/scripts?title=${encodeURIComponent(lastValues.productTitle)}&desc=${encodeURIComponent(lastValues.productDescription ?? "")}&aud=${encodeURIComponent(lastValues.targetAudience ?? "")}`
     : "/scripts";
 
   return (
     <Layout>
       <div className="w-full max-w-6xl space-y-8 animate-in fade-in duration-500">
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="w-full md:w-1/3 md:sticky md:top-8">
-            <div className="space-y-4">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Bundle Builder</h1>
-                <p className="text-muted-foreground mt-2">
-                  Turn a basic product into an irresistible offer by stacking value and framing the angle.
-                </p>
-              </div>
-
-              <Card className="border-primary/20 shadow-lg shadow-primary/5">
-                <CardContent className="pt-6">
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="productTitle"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Product Title</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g. 30-Day Fitness Plan" {...field} className="bg-background" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="productDescription"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                              <Textarea placeholder="What is it and what does it do?" {...field} className="bg-background resize-none h-20" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="targetAudience"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Target Audience</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g. Busy professionals" {...field} className="bg-background" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="angle"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Marketing Angle</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="bg-background">
-                                  <SelectValue placeholder="Select angle" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="transformation">Transformation (Where they want to be)</SelectItem>
-                                <SelectItem value="pain">Pain (What they want to escape)</SelectItem>
-                                <SelectItem value="desire">Desire (What they want to achieve)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="submit" className="w-full" disabled={generateBundle.isPending}>
-                        {generateBundle.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Package className="mr-2 h-4 w-4" />}
-                        Generate Offer Bundle
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </div>
+          <div className="w-full md:w-[300px] shrink-0 md:sticky md:top-8">
+            <AIInput
+              title="Bundle Builder"
+              subtitle="Describe your product and audience. SPARK turns it into an irresistible offer with bonuses, pricing, and a headline."
+              placeholder={`e.g. "A 30-day fitness guide for busy moms who want to lose weight without going to the gym"`}
+              examples={EXAMPLES}
+              fields={FIELDS}
+              extract={extractBundleFields}
+              onGenerate={handleGenerate}
+              loading={generateBundle.isPending}
+              ctaLabel="Build Offer Bundle"
+              ctaIcon={<Package className="h-4 w-4" />}
+              initialPrompt={initialPrompt}
+            />
           </div>
 
           <div className="w-full md:w-2/3">
@@ -289,12 +262,12 @@ export default function Bundle() {
               </Card>
             ) : (
               <div className="h-[500px] flex flex-col items-center justify-center border border-dashed rounded-xl border-border bg-card/10 text-center p-8">
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Package className="h-6 w-6 text-primary" />
+                <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Package className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-medium mb-2">No bundle generated yet</h3>
-                <p className="text-muted-foreground max-w-sm">
-                  Enter your product details on the left to transform it into a high-converting, irresistible offer bundle.
+                <h3 className="text-xl font-semibold mb-2">Describe your product</h3>
+                <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
+                  Tell SPARK what you're selling and who it's for. It builds the entire offer — bonuses, pricing, headline, and CTA.
                 </p>
               </div>
             )}

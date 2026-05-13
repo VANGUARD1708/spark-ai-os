@@ -1,32 +1,69 @@
 import { Layout } from "@/components/layout";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AIInput, type AIField } from "@/components/ai-input";
 import { useGenerateViralHooks, useSaveHooks, getGetSavedHooksQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Flame, Copy, ArrowRight, Video, Bookmark, Check } from "lucide-react";
+import { Flame, Copy, ArrowRight, Video, Bookmark, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-const formSchema = z.object({
-  productTitle: z.string().min(2, "Product or topic is required").max(100),
-  description: z.string().max(300).optional(),
-  hookType: z.enum(["all", "curiosity", "pain", "story", "short"] as const),
-});
-
-const HOOK_TYPE_OPTIONS = [
-  { value: "all", label: "All Types", desc: "Get every category", color: "text-primary" },
-  { value: "curiosity", label: "Curiosity", desc: "HAVE to keep watching", color: "text-purple-400" },
-  { value: "pain", label: "Pain", desc: "Hits a deep frustration", color: "text-red-400" },
-  { value: "story", label: "Story", desc: "Opens with a moment", color: "text-blue-400" },
-  { value: "short", label: "Short", desc: "Under 8 words, punchy", color: "text-orange-400" },
+const EXAMPLES = [
+  "Pain hooks for a 30-day fitness plan for moms who can't lose weight after having kids",
+  "Curiosity hooks for a budgeting system that helped me save $500 in one month",
+  "Short punchy hooks for a dog training course — dogs who won't stop barking",
+  "Story hooks for a freelance design course — how I went from $20/hr to $200/hr",
+  "All hook types for a side hustle guide for teachers who want passive income",
 ];
+
+const FIELDS: AIField[] = [
+  { key: "productTitle", label: "Product / topic", emoji: "📦", value: "" },
+  { key: "description", label: "What makes it different", emoji: "✨", value: "" },
+  {
+    key: "hookType",
+    label: "Hook type",
+    emoji: "🪝",
+    value: "all",
+    options: [
+      { value: "all", label: "All types — get every category" },
+      { value: "curiosity", label: "Curiosity — they HAVE to keep watching" },
+      { value: "pain", label: "Pain — hits a deep frustration" },
+      { value: "story", label: "Story — opens with a moment" },
+      { value: "short", label: "Short — under 8 words, punchy" },
+    ],
+  },
+];
+
+function extractHookFields(text: string): Record<string, string> {
+  const lower = text.toLowerCase();
+
+  // Product title: before "for" or "that" or whole thing
+  const productMatch =
+    text.match(/(?:hooks? for a?n?\s+|about a?n?\s+|for my\s+)([A-Za-z][\w\s,'-]{3,50}?)(?:\s+for|\s+that|\s+targeting|\s+to |\.| — |,|$)/i)?.[1]?.trim() ??
+    text.match(/^([A-Za-z][\w\s,'-]{3,40}?)(?:\s+for|\s+that|\.| — |,|$)/i)?.[1]?.trim() ??
+    text.trim().split(/\s+/).slice(0, 5).join(" ");
+
+  // Description: after " — " or "who"
+  const descMatch =
+    text.match(/—\s+([a-zA-Z][\w\s,'-]{5,80}?)(?:\.|,|$)/i)?.[1]?.trim() ??
+    text.match(/who\s+([a-zA-Z][\w\s,'-]{5,80}?)(?:\.|,|$)/i)?.[1]?.trim() ?? "";
+
+  // Hook type
+  let hookType = "all";
+  if (/\b(curiosity|wonder|secret|they don'?t want|don'?t know)\b/.test(lower)) hookType = "curiosity";
+  else if (/\b(pain|hurt|hate|struggling|can'?t|fail|frustrat|broke|stuck)\b/.test(lower)) hookType = "pain";
+  else if (/\b(story|storytell|personal|real life|journey|moment|when I)\b/.test(lower)) hookType = "story";
+  else if (/\b(short|quick|punchy|under|brief|simple|fast)\b/.test(lower)) hookType = "short";
+  else if (/\b(all|every|each|different|multiple|variety|types?)\b/.test(lower)) hookType = "all";
+
+  return {
+    productTitle: productMatch?.replace(/[.,!?]+$/, "").trim() ?? "",
+    description: descMatch.replace(/[.,!?]+$/, "").trim(),
+    hookType,
+  };
+}
 
 const HOOK_COLORS: Record<string, string> = {
   curiosity: "border-purple-400/30 bg-purple-400/5 hover:border-purple-400/50",
@@ -49,46 +86,41 @@ export default function ViralHooks() {
   const saveHooks = useSaveHooks();
   const [filterType, setFilterType] = useState<string>("all");
   const [saved, setSaved] = useState(false);
+  const [lastValues, setLastValues] = useState<Record<string, string>>({});
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { productTitle: "", description: "", hookType: "all" },
-  });
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleGenerate = (values: Record<string, string>) => {
     setSaved(false);
-    generateHooks.mutate({ data: values }, {
-      onSuccess: () => {
-        setFilterType("all");
-        toast({ title: "Hooks generated!" });
-      },
-      onError: () => toast({ title: "Failed to generate hooks", variant: "destructive" }),
+    setLastValues(values);
+    setFilterType("all");
+    generateHooks.mutate({
+      data: {
+        productTitle: values.productTitle,
+        description: values.description,
+        hookType: values.hookType as "all" | "curiosity" | "pain" | "story" | "short",
+      }
+    }, {
+      onSuccess: () => {},
+      onError: () => toast({ title: "Couldn't generate hooks — try again.", variant: "destructive" }),
     });
   };
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast({ title: "Copied to clipboard!" });
+    toast({ title: "Copied!" });
   };
 
   const handleSave = () => {
     const hooksData = generateHooks.data;
     if (!hooksData) return;
     saveHooks.mutate(
-      {
-        data: {
-          productTitle: form.getValues("productTitle"),
-          hookType: form.getValues("hookType"),
-          data: hooksData as any,
-        }
-      },
+      { data: { productTitle: lastValues.productTitle ?? "", hookType: lastValues.hookType ?? "all", data: hooksData as any } },
       {
         onSuccess: () => {
           setSaved(true);
           toast({ title: "Hooks saved to Asset Command Center" });
           queryClient.invalidateQueries({ queryKey: getGetSavedHooksQueryKey() });
         },
-        onError: () => toast({ title: "Failed to save hooks", variant: "destructive" }),
+        onError: () => toast({ title: "Failed to save", variant: "destructive" }),
       }
     );
   };
@@ -97,9 +129,9 @@ export default function ViralHooks() {
   const hooks = hooksData?.hooks ?? [];
   const filteredHooks = filterType === "all" ? hooks : hooks.filter(h => h.type === filterType);
 
-  const groupedByType = (hooks: typeof filteredHooks) => {
-    const groups: Record<string, typeof filteredHooks> = {};
-    hooks.forEach(h => {
+  const groupedByType = (hs: typeof filteredHooks) => {
+    const groups: Record<string, typeof hs> = {};
+    hs.forEach(h => {
       if (!groups[h.type]) groups[h.type] = [];
       groups[h.type].push(h);
     });
@@ -110,85 +142,19 @@ export default function ViralHooks() {
     <Layout>
       <div className="w-full max-w-6xl space-y-8 animate-in fade-in duration-500">
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="w-full md:w-[280px] shrink-0 md:sticky md:top-8 space-y-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Viral Hooks</h1>
-              <p className="text-muted-foreground mt-2 text-sm">
-                Scroll-stopping opening lines engineered to interrupt the feed and demand attention.
-              </p>
-            </div>
-
-            <Card className="border-primary/20 shadow-lg shadow-primary/5">
-              <CardContent className="pt-5 pb-5">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="productTitle"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs font-semibold uppercase tracking-wider">Product / Topic</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g. 30-Day Fitness Plan, budgeting" {...field} className="bg-background" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs font-semibold uppercase tracking-wider">Context (optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="What makes it different?" {...field} className="bg-background" />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="hookType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs font-semibold uppercase tracking-wider">Hook Type</FormLabel>
-                          <div className="grid grid-cols-1 gap-2">
-                            {HOOK_TYPE_OPTIONS.map(opt => (
-                              <button
-                                key={opt.value}
-                                type="button"
-                                onClick={() => field.onChange(opt.value)}
-                                className={`flex items-center gap-3 p-2.5 rounded-lg border text-left transition-all ${
-                                  field.value === opt.value
-                                    ? "border-primary/50 bg-primary/10"
-                                    : "border-border/50 bg-secondary/20 hover:border-border"
-                                }`}
-                              >
-                                <div className="flex-1">
-                                  <p className={`text-sm font-semibold ${opt.color}`}>{opt.label}</p>
-                                  <p className="text-[11px] text-muted-foreground">{opt.desc}</p>
-                                </div>
-                                {field.value === opt.value && (
-                                  <div className="h-2 w-2 rounded-full bg-primary" />
-                                )}
-                              </button>
-                            ))}
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button type="submit" className="w-full" disabled={generateHooks.isPending}>
-                      {generateHooks.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Flame className="mr-2 h-4 w-4" />}
-                      Generate Hooks
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
+          <div className="w-full md:w-[300px] shrink-0 md:sticky md:top-8">
+            <AIInput
+              title="Viral Hooks"
+              subtitle="Describe your product and who it's for. SPARK writes scroll-stopping openers built for attention."
+              placeholder={`e.g. "Pain hooks for a fitness guide for moms who can't lose weight after having kids"`}
+              examples={EXAMPLES}
+              fields={FIELDS}
+              extract={extractHookFields}
+              onGenerate={handleGenerate}
+              loading={generateHooks.isPending}
+              ctaLabel="Generate Hooks"
+              ctaIcon={<Flame className="h-4 w-4" />}
+            />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -212,7 +178,9 @@ export default function ViralHooks() {
                             : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground"
                         }`}
                       >
-                        {type === "all" ? `All (${hooks.length})` : `${type.charAt(0).toUpperCase() + type.slice(1)} (${groupedByType(hooks)[type]?.length || 0})`}
+                        {type === "all"
+                          ? `All (${hooks.length})`
+                          : `${type.charAt(0).toUpperCase() + type.slice(1)} (${groupedByType(hooks)[type]?.length || 0})`}
                       </button>
                     ))}
                   </div>
@@ -272,13 +240,13 @@ export default function ViralHooks() {
                 </div>
               </div>
             ) : (
-              <div className="h-[400px] flex flex-col items-center justify-center border border-dashed rounded-xl border-border bg-card/10 text-center p-8">
-                <div className="h-12 w-12 rounded-full bg-orange-400/10 flex items-center justify-center mb-4">
-                  <Flame className="h-6 w-6 text-orange-400" />
+              <div className="h-[420px] flex flex-col items-center justify-center border border-dashed rounded-xl border-border bg-card/10 text-center p-8">
+                <div className="h-14 w-14 rounded-full bg-orange-400/10 flex items-center justify-center mb-4">
+                  <Flame className="h-7 w-7 text-orange-400" />
                 </div>
-                <h3 className="text-xl font-medium mb-2">No hooks yet</h3>
-                <p className="text-muted-foreground max-w-sm text-sm">
-                  Enter a product or topic and choose a hook type. We'll generate scroll-stopping openers built for attention.
+                <h3 className="text-xl font-semibold mb-2">Describe your offer</h3>
+                <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
+                  Tell SPARK what you're promoting and who it's for. Just talk — no forms to fill.
                 </p>
               </div>
             )}
