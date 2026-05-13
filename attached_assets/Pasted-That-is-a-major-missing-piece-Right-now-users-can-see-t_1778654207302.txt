@@ -1,0 +1,305 @@
+That is a major missing piece.
+
+Right now users can see the sidebar, but they are not being guided through the system.
+For a complex AI platform like SPARK, that creates confusion and overwhelm fast.
+
+You need:
+
+an AI-guided onboarding + sidebar tour system.
+
+This is extremely important.
+
+⸻
+
+WHAT IS MISSING
+
+The app currently assumes users already understand:
+
+* what each feature does
+* when to use it
+* why it matters
+* what happens next
+
+Most users will not understand this automatically.
+
+Especially because SPARK is ambitious.
+
+⸻
+
+WHAT SPARK NEEDS
+
+SMART GUIDED TOUR SYSTEM
+
+Not boring tutorials.
+
+Not long walkthroughs.
+
+But:
+
+contextual AI guidance.
+
+⸻
+
+HOW IT SHOULD WORK
+
+FIRST LOGIN EXPERIENCE
+
+After Google sign-in:
+
+SPARK should say:
+
+“Welcome to SPARK. Let me show you how to turn ideas into businesses.”
+
+Then guide the user step-by-step.
+
+⸻
+
+THE PERFECT TOUR FLOW
+
+STEP 1 — DISCOVER
+
+Highlight:
+
+* Trend Radar
+* Winning Products
+* Market Signals
+
+Explain:
+
+“This is where you discover opportunities and trends.”
+
+Then:
+small demo runs automatically.
+
+⸻
+
+STEP 2 — BUILD
+
+Highlight:
+
+* Brand Builder
+* Offer Builder
+* Bundle Builder
+
+Explain:
+
+“This is where SPARK turns ideas into real business concepts.”
+
+Then:
+show instant sample output.
+
+⸻
+
+STEP 3 — CREATE
+
+Highlight:
+
+* Viral Hooks
+* TikTok Scripts
+* Ad Generator
+
+Explain:
+
+“This is where you generate content and campaigns.”
+
+Then:
+show generated example.
+
+⸻
+
+STEP 4 — LAUNCH
+
+Highlight:
+
+* Scheduling
+* Campaign Composer
+* Automations
+
+Explain:
+
+“This is where you launch and organize your growth.”
+
+⸻
+
+STEP 5 — SCALE
+
+Highlight:
+
+* Analytics
+* Forecasting
+* Recommendations
+
+Explain:
+
+“This is where SPARK helps you optimize and grow.”
+
+⸻
+
+THIS IS IMPORTANT
+
+The user should NOT feel:
+
+“Where do I start?”
+
+SPARK should always answer:
+
+“Here’s your next move.”
+
+⸻
+
+ADD “WHAT DOES THIS DO?” BUTTONS
+
+Every page should include:
+
+Tiny Help Button
+
+Example:
+
+“What does Trend Radar do?”
+
+When tapped:
+opens:
+
+* quick explanation
+* short demo
+* example result
+* suggested use case
+
+This dramatically improves comprehension.
+
+⸻
+
+ADD AI GUIDE MODE
+
+One of the best future additions.
+
+“Guide Me”
+
+Button near the sidebar.
+
+User taps:
+SPARK becomes interactive assistant.
+
+Example:
+
+“You should start with Trend Radar to find a niche.”
+
+Then:
+
+* opens correct page
+* explains purpose
+* suggests actions
+
+This makes SPARK feel:
+
+alive.
+
+⸻
+
+ADD “START HERE” MODE
+
+New users should see:
+
+START HERE
+
+1. Find an opportunity
+2. Build your brand
+3. Create your content
+4. Launch your campaign
+
+This removes overwhelm.
+
+⸻
+
+EACH SIDEBAR BUTTON NEEDS:
+
+1. Purpose
+
+What this page does.
+
+2. Why it matters
+
+Why the user should care.
+
+3. What happens here
+
+What the page generates or analyzes.
+
+4. Example result
+
+Show preview output.
+
+5. Suggested next step
+
+Where to go after.
+
+⸻
+
+EXAMPLE
+
+Trend Radar
+
+Purpose
+
+Find fast-growing opportunities before they become crowded.
+
+Why it matters
+
+Early trends are easier to grow and monetize.
+
+What happens here
+
+SPARK scans trending niches and audience interest.
+
+Example result
+
+* niche trend
+* growth score
+* platform fit
+
+Suggested next step
+
+Build a brand around this trend.
+
+⸻
+
+BEST UX STRATEGY
+
+DO NOT make users learn the system manually.
+
+Instead:
+
+SPARK teaches itself while being used.
+
+That is:
+
+modern AI product design.
+
+⸻
+
+MOST IMPORTANT THING
+
+Your sidebar is becoming:
+
+the business journey.
+
+Not:
+just navigation.
+
+Meaning:
+
+DISCOVER
+↓
+BUILD
+↓
+CREATE
+↓
+LAUNCH
+↓
+SCALE
+
+The sidebar itself should teach users:
+
+how to build a business.
+
+That is the real magic.
