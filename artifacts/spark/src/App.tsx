@@ -38,6 +38,7 @@ import Campaigns from "@/pages/campaigns";
 import Command from "@/pages/command";
 import Agents from "@/pages/agents";
 import Onboarding from "@/pages/onboarding";
+import BusinessProfile from "@/pages/business-profile";
 
 const queryClient = new QueryClient();
 
@@ -178,6 +179,7 @@ function AppRoutes() {
       <Route path="/command" component={Command} />
       <Route path="/agents" component={Agents} />
       <Route path="/onboarding" component={Onboarding} />
+      <Route path="/business-profile" component={BusinessProfile} />
       <Route component={NotFound} />
     </Switch>
   );

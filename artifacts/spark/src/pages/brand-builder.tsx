@@ -1,33 +1,73 @@
 import { Layout } from "@/components/layout";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AIInput, type AIField } from "@/components/ai-input";
 import { useGenerateBrand, useSaveBrand, getGetSavedBrandsQueryKey } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Palette, Copy, ArrowRight, ShoppingBag, Users, Bookmark, Check } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Palette, Copy, ArrowRight, ShoppingBag, Users, Bookmark, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-const formSchema = z.object({
-  niche: z.string().min(2, "Niche is required").max(100),
-  productConcept: z.string().min(5, "Product concept is required").max(300),
-  targetAudience: z.string().max(100).optional(),
-  tonePreference: z.enum(["bold", "friendly", "premium", "playful", "professional"] as const),
-});
-
-const TONE_OPTIONS = [
-  { value: "bold", label: "Bold & Disruptive", desc: "Strong, direct, unapologetic" },
-  { value: "friendly", label: "Friendly & Warm", desc: "Approachable, conversational" },
-  { value: "premium", label: "Premium & Refined", desc: "Elevated, exclusive, polished" },
-  { value: "playful", label: "Playful & Fun", desc: "Light, energetic, personality-driven" },
-  { value: "professional", label: "Professional & Trustworthy", desc: "Credible, authoritative, reliable" },
+const EXAMPLES = [
+  "A premium fitness brand for busy moms who want to feel strong without sacrificing family time",
+  "A bold personal finance brand for Gen Z freelancers who are tired of broke culture",
+  "A playful meal prep brand for college students who hate cooking but love eating well",
+  "A professional coaching brand for teachers who want to turn their expertise into online income",
+  "A minimalist productivity brand for creators who are overwhelmed by too many tools",
 ];
+
+const FIELDS: AIField[] = [
+  { key: "niche", label: "Market niche", emoji: "🎯", value: "" },
+  { key: "productConcept", label: "What you sell", emoji: "📦", value: "" },
+  { key: "targetAudience", label: "Target audience", emoji: "👥", value: "" },
+  {
+    key: "tonePreference",
+    label: "Brand tone",
+    emoji: "🎨",
+    value: "bold",
+    options: [
+      { value: "bold", label: "Bold & Disruptive" },
+      { value: "friendly", label: "Friendly & Warm" },
+      { value: "premium", label: "Premium & Refined" },
+      { value: "playful", label: "Playful & Fun" },
+      { value: "professional", label: "Professional & Trustworthy" },
+    ],
+  },
+];
+
+function extractBrandFields(text: string): Record<string, string> {
+  const lower = text.toLowerCase();
+
+  // Niche: first core topic
+  const nicheMatch =
+    text.match(/\b(?:fitness|finance|food|meal|cooking|productivity|coaching|creator|fashion|tech|wellness|health|beauty|pet|dog|travel|education|parenting)\b/i)?.[0] ??
+    text.trim().split(/\s+/).slice(0, 3).join(" ");
+
+  // Audience: after "for"
+  const audMatch =
+    text.match(/\b(?:for|helping|targeting)\s+([a-zA-Z][\w\s,'-]{3,50}?)(?:\s+who|\s+that|\s+to|\.|,|$)/i)?.[1]?.trim() ?? "";
+
+  // Product concept: main thing sold
+  const productMatch =
+    text.match(/(?:brand for |brand that |course |guide |system |program |tool |platform )([a-zA-Z][\w\s,'-]{3,50}?)(?:\s+for|\s+that|\.|,|$)/i)?.[1]?.trim() ??
+    text.trim().split(/\s+/).slice(1, 6).join(" ");
+
+  // Tone detection
+  let tonePreference = "bold";
+  if (/\b(premium|luxury|elevated|refined|exclusive|elegant)\b/.test(lower)) tonePreference = "premium";
+  else if (/\b(friendly|warm|approachable|kind|caring|cozy)\b/.test(lower)) tonePreference = "friendly";
+  else if (/\b(playful|fun|energetic|quirky|witty|light)\b/.test(lower)) tonePreference = "playful";
+  else if (/\b(professional|trusted|credible|authoritative|serious|expert)\b/.test(lower)) tonePreference = "professional";
+  else if (/\b(bold|disruptive|edgy|strong|powerful|fearless)\b/.test(lower)) tonePreference = "bold";
+
+  return {
+    niche: nicheMatch?.replace(/[.,!?]+$/, "").trim() ?? "",
+    productConcept: productMatch?.replace(/[.,!?]+$/, "").trim() ?? "",
+    targetAudience: audMatch?.replace(/[.,!?]+$/, "").trim() ?? "",
+    tonePreference,
+  };
+}
 
 export default function BrandBuilder() {
   const { toast } = useToast();
@@ -35,15 +75,19 @@ export default function BrandBuilder() {
   const generateBrand = useGenerateBrand();
   const saveBrand = useSaveBrand();
   const [saved, setSaved] = useState(false);
+  const [lastValues, setLastValues] = useState<Record<string, string>>({});
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { niche: "", productConcept: "", targetAudience: "", tonePreference: "bold" },
-  });
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleGenerate = (values: Record<string, string>) => {
     setSaved(false);
-    generateBrand.mutate({ data: values }, {
+    setLastValues(values);
+    generateBrand.mutate({
+      data: {
+        niche: values.niche,
+        productConcept: values.productConcept,
+        targetAudience: values.targetAudience,
+        tonePreference: values.tonePreference as "bold" | "friendly" | "premium" | "playful" | "professional",
+      }
+    }, {
       onSuccess: () => toast({ title: "Brand identity generated!" }),
       onError: () => toast({ title: "Failed to generate brand", variant: "destructive" }),
     });
@@ -58,14 +102,7 @@ export default function BrandBuilder() {
     const brand = generateBrand.data;
     if (!brand) return;
     saveBrand.mutate(
-      {
-        data: {
-          niche: form.getValues("niche"),
-          brandName: brand.brandName,
-          slogan: brand.slogan,
-          data: brand as any,
-        }
-      },
+      { data: { niche: lastValues.niche ?? "", brandName: brand.brandName, slogan: brand.slogan, data: brand as any } },
       {
         onSuccess: () => {
           setSaved(true);
@@ -83,94 +120,19 @@ export default function BrandBuilder() {
     <Layout>
       <div className="w-full max-w-6xl space-y-8 animate-in fade-in duration-500">
         <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="w-full md:w-[280px] shrink-0 md:sticky md:top-8 space-y-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Brand Builder</h1>
-              <p className="text-muted-foreground mt-2 text-sm">
-                Generate a complete brand identity — name, slogan, colors, and voice — from a single prompt.
-              </p>
-            </div>
-
-            <Card className="border-primary/20 shadow-lg shadow-primary/5">
-              <CardContent className="pt-5 pb-5">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="niche"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs font-semibold uppercase tracking-wider">Market Niche</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g. fitness, productivity, finance" {...field} className="bg-background" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="productConcept"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs font-semibold uppercase tracking-wider">What You Sell</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g. digital workout programs for busy moms" {...field} className="bg-background" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="targetAudience"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs font-semibold uppercase tracking-wider">Target Audience (optional)</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g. working moms 28-45" {...field} className="bg-background" />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="tonePreference"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-xs font-semibold uppercase tracking-wider">Brand Tone</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="bg-background">
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {TONE_OPTIONS.map(t => (
-                                <SelectItem key={t.value} value={t.value}>
-                                  <div>
-                                    <div className="font-medium">{t.label}</div>
-                                    <div className="text-xs text-muted-foreground">{t.desc}</div>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button type="submit" className="w-full" disabled={generateBrand.isPending}>
-                      {generateBrand.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Palette className="mr-2 h-4 w-4" />}
-                      Generate Brand
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
+          <div className="w-full md:w-[300px] shrink-0 md:sticky md:top-8">
+            <AIInput
+              title="Brand Builder"
+              subtitle="Describe your niche and who you help. SPARK generates a complete brand identity — name, colors, voice, and positioning."
+              placeholder={`e.g. "A premium fitness brand for busy moms who want to feel strong without going to the gym"`}
+              examples={EXAMPLES}
+              fields={FIELDS}
+              extract={extractBrandFields}
+              onGenerate={handleGenerate}
+              loading={generateBrand.isPending}
+              ctaLabel="Generate Brand"
+              ctaIcon={<Palette className="h-4 w-4" />}
+            />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -186,8 +148,8 @@ export default function BrandBuilder() {
                   <div className="h-1 w-full" style={{ background: brand.colors?.[0]?.hex || "#84cc16" }} />
                   <CardHeader className="text-center pb-6 pt-8">
                     <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Your Brand</p>
-                    <CardTitle className="text-5xl font-black tracking-tight">{brand.brandName}</CardTitle>
-                    <CardDescription className="text-lg text-foreground/90 font-medium mt-2">{brand.slogan}</CardDescription>
+                    <h2 className="text-5xl font-black tracking-tight">{brand.brandName}</h2>
+                    <p className="text-lg text-foreground/90 font-medium mt-2">{brand.slogan}</p>
                     <p className="text-sm text-muted-foreground mt-3 max-w-md mx-auto leading-relaxed">{brand.tagline}</p>
                   </CardHeader>
                   <div className="flex items-center justify-center gap-3 pb-6">
@@ -215,10 +177,7 @@ export default function BrandBuilder() {
                     <CardContent className="space-y-3">
                       {brand.colors?.map((color, i) => (
                         <div key={i} className="flex items-center gap-3">
-                          <div
-                            className="h-10 w-10 rounded-lg border border-border/50 shrink-0 shadow-sm"
-                            style={{ backgroundColor: color.hex }}
-                          />
+                          <div className="h-10 w-10 rounded-lg border border-border/50 shrink-0 shadow-sm" style={{ backgroundColor: color.hex }} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="font-medium text-sm">{color.name}</span>
@@ -270,16 +229,12 @@ export default function BrandBuilder() {
                   <p className="text-sm text-muted-foreground sm:mr-auto">Next step:</p>
                   <Link href="/campaigns" className="w-full sm:w-auto">
                     <Button variant="outline" className="w-full group/btn" size="sm">
-                      <ArrowRight className="h-4 w-4 mr-2" />
-                      Launch Campaign
-                      <ArrowRight className="ml-2 h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                      <ArrowRight className="h-4 w-4 mr-2" /> Launch Campaign
                     </Button>
                   </Link>
                   <Link href="/storefronts" className="w-full sm:w-auto">
                     <Button className="w-full group/btn" size="sm">
-                      <ShoppingBag className="h-4 w-4 mr-2" />
-                      Launch Storefront
-                      <ArrowRight className="ml-2 h-3.5 w-3.5 opacity-0 -translate-x-1 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                      <ShoppingBag className="h-4 w-4 mr-2" /> Launch Storefront
                     </Button>
                   </Link>
                 </div>
@@ -289,9 +244,9 @@ export default function BrandBuilder() {
                 <div className="h-12 w-12 rounded-full bg-purple-400/10 flex items-center justify-center mb-4">
                   <Palette className="h-6 w-6 text-purple-400" />
                 </div>
-                <h3 className="text-xl font-medium mb-2">No brand generated yet</h3>
-                <p className="text-muted-foreground max-w-sm text-sm">
-                  Tell us your niche and what you sell. We'll create a full brand identity ready to launch.
+                <h3 className="text-xl font-semibold mb-2">Describe your brand vision</h3>
+                <p className="text-muted-foreground max-w-sm text-sm leading-relaxed">
+                  Tell SPARK your niche and who you help. It builds the full brand identity from a single prompt.
                 </p>
               </div>
             )}

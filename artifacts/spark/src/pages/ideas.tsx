@@ -1,12 +1,13 @@
 import { Layout } from "@/components/layout";
 import { AIInput, type AIField } from "@/components/ai-input";
-import { useGenerateIdeas, useSaveIdea, type ProductIdea } from "@workspace/api-client-react";
+import { useGenerateIdeas, useSaveIdea, useCritiqueIdea, type ProductIdea } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Loader2, Sparkles, TrendingUp, Target, Save, Check, Package,
-  ArrowRight, Lightbulb, Copy, RefreshCw, Video, Zap
+  Sparkles, TrendingUp, Target, Save, Check, Package,
+  ArrowRight, Lightbulb, Copy, RefreshCw, Video, Zap, Brain,
+  ThumbsUp, AlertTriangle, Wand2, ChevronDown, ChevronUp
 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -73,6 +74,119 @@ function getScoreColor(score: number) {
   if (score >= 80) return "text-green-500";
   if (score >= 50) return "text-yellow-500";
   return "text-red-500";
+}
+
+interface CritiquePanel {
+  index: number;
+  open: boolean;
+}
+
+function IdeaCritiquePanel({ idea, niche }: { idea: ProductIdea; niche: string }) {
+  const critiqueIdea = useCritiqueIdea();
+  const [ran, setRan] = useState(false);
+
+  const handleCritique = () => {
+    setRan(true);
+    critiqueIdea.mutate({
+      title: idea.title,
+      description: idea.description,
+      niche,
+      demandScore: idea.demandScore,
+      competitionScore: idea.competitionScore,
+    });
+  };
+
+  const c = critiqueIdea.data;
+  const VERDICT_STYLES: Record<string, string> = {
+    strong: "text-green-400 bg-green-400/10 border-green-400/20",
+    promising: "text-primary bg-primary/10 border-primary/20",
+    weak: "text-orange-400 bg-orange-400/10 border-orange-400/20",
+    overcrowded: "text-red-400 bg-red-400/10 border-red-400/20",
+  };
+  const verdictStyle = c ? (VERDICT_STYLES[c.verdict] ?? VERDICT_STYLES.promising) : "";
+
+  if (!ran) {
+    return (
+      <button
+        onClick={handleCritique}
+        className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg hover:bg-white/5 transition-all"
+      >
+        <Brain className="h-3.5 w-3.5" />
+        Get SPARK's Opinion
+      </button>
+    );
+  }
+
+  if (critiqueIdea.isPending) {
+    return (
+      <div className="mx-4 mb-4 p-3 rounded-lg bg-secondary/20 border border-border/40 flex items-center gap-2 text-xs text-muted-foreground">
+        <Sparkles className="h-3.5 w-3.5 animate-pulse text-primary" />
+        SPARK is analysing this idea…
+      </div>
+    );
+  }
+
+  if (!c) return null;
+
+  return (
+    <div className="mx-4 mb-4 p-4 rounded-xl border bg-card/50 space-y-3">
+      <div className="flex items-center gap-2">
+        <div className={`text-xs font-bold px-2.5 py-1 rounded-full border ${verdictStyle}`}>
+          {c.verdictLabel}
+        </div>
+        <div className="ml-auto flex items-center gap-1">
+          <span className="text-muted-foreground text-xs">SPARK Rating:</span>
+          <span className={`text-sm font-black ${c.overallRating >= 8 ? "text-green-400" : c.overallRating >= 6 ? "text-yellow-400" : "text-red-400"}`}>
+            {c.overallRating}/10
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-2 p-3 rounded-lg bg-primary/5 border border-primary/15">
+        <Zap className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+        <p className="text-xs leading-relaxed text-foreground/90">{c.sparkTake}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <ThumbsUp className="h-3 w-3 text-green-400" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-green-400">Strengths</span>
+          </div>
+          <ul className="space-y-1">
+            {c.strengths?.map((s, i) => (
+              <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                <span className="text-green-400 mt-0.5">·</span>{s}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <AlertTriangle className="h-3 w-3 text-orange-400" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400">Risks</span>
+          </div>
+          <ul className="space-y-1">
+            {c.risks?.map((r, i) => (
+              <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                <span className="text-orange-400 mt-0.5">·</span>{r}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {c.bestAngle && (
+        <div className="flex items-start gap-2 p-2.5 rounded-lg bg-secondary/30">
+          <Wand2 className="h-3.5 w-3.5 text-purple-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Best angle: </span>
+            <span className="text-xs text-muted-foreground">{c.bestAngle}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Ideas() {
@@ -248,6 +362,8 @@ export default function Ideas() {
                         </div>
                       )}
                     </CardContent>
+
+                    <IdeaCritiquePanel idea={idea} niche={currentInput.niche ?? ""} />
 
                     <CardFooter className="pt-4 border-t border-border/40 bg-secondary/10 flex gap-2 flex-wrap">
                       <Link href={`/bundle?title=${encodeURIComponent(idea.title)}&desc=${encodeURIComponent(idea.description)}&aud=${encodeURIComponent(idea.targetAudience || "")}`} className="flex-1 min-w-[130px]">

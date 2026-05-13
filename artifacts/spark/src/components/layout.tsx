@@ -1,12 +1,14 @@
 import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { SparkAI } from "./spark-ai";
+import { useGetUsage } from "@workspace/api-client-react";
 import {
   Zap, LayoutDashboard, Lightbulb, TrendingUp, Trophy,
   Package, Palette, Video, Flame, BarChart2, FlaskConical,
   Bookmark, FolderOpen, Settings, Menu, X, ChevronRight,
   Send, Bot, Megaphone, Search, Globe, Crown, Layers,
-  Radio, Clock, Sparkles, Target, Activity, Users, Radar
+  Radio, Clock, Sparkles, Target, Activity, Users, Radar,
+  Brain
 } from "lucide-react";
 
 type Badge = "Beta" | "Labs" | "Pro" | "Preview" | "Enterprise";
@@ -94,6 +96,32 @@ const sections: NavSection[] = [
     ],
   },
 ];
+
+function UsageBar() {
+  const { data: usage } = useGetUsage();
+  if (!usage) return null;
+  const pct = usage.percentUsed;
+  const isLow = usage.remaining <= 10;
+  return (
+    <div className="px-3 pb-2 pt-1 border-t border-border/40 shrink-0">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Monthly Usage</span>
+        <span className={`text-[10px] font-bold ${isLow ? "text-red-400" : "text-muted-foreground"}`}>
+          {usage.totalGenerations}/{usage.freeLimit}
+        </span>
+      </div>
+      <div className="h-1 w-full bg-secondary/50 rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${pct >= 80 ? "bg-red-400" : pct >= 50 ? "bg-yellow-400" : "bg-primary"}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      {isLow && (
+        <p className="text-[9px] text-red-400 mt-1">{usage.remaining} generations left — upgrade for unlimited</p>
+      )}
+    </div>
+  );
+}
 
 interface LayoutProps {
   children: ReactNode;
@@ -185,7 +213,17 @@ export function Layout({ children }: LayoutProps) {
         ))}
       </nav>
 
+      <UsageBar />
+
       <div className="px-2.5 pb-3 pt-2 border-t border-border/40 space-y-0.5 shrink-0">
+        <Link href="/business-profile">
+          <button className={`w-full flex items-center gap-2.5 px-3 py-[7px] rounded-lg text-[13px] transition-all ${
+            location === "/business-profile" ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+          }`}>
+            <Brain className="h-[15px] w-[15px] shrink-0" />
+            Business Memory
+          </button>
+        </Link>
         <Link href="/pricing">
           <button className={`w-full flex items-center gap-2.5 px-3 py-[7px] rounded-lg text-[13px] transition-all ${
             location === "/pricing" ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground hover:text-foreground hover:bg-white/5"

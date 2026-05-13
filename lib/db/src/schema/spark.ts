@@ -124,3 +124,23 @@ export const generationStatsTable = pgTable("generation_stats", {
 export const insertGenerationStatSchema = createInsertSchema(generationStatsTable).omit({ id: true, createdAt: true });
 export type InsertGenerationStat = z.infer<typeof insertGenerationStatSchema>;
 export type GenerationStat = typeof generationStatsTable.$inferSelect;
+
+// ─────────────────────────────────────────────
+// BUSINESS MEMORY (USER PROFILE)
+// ─────────────────────────────────────────────
+export const userProfilesTable = pgTable("user_profiles", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().unique(),
+  businessName: text("business_name"),
+  niche: text("niche"),
+  audience: text("audience"),
+  brandVoice: text("brand_voice"),
+  topProduct: text("top_product"),
+  goals: text("goals"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertUserProfileSchema = createInsertSchema(userProfilesTable).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
+export type UserProfile = typeof userProfilesTable.$inferSelect;
