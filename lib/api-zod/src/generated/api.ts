@@ -650,6 +650,7 @@ export const DeleteCampaignResponse = zod.object({
  */
 export const RunCommandBody = zod.object({
   goal: zod.string(),
+
   history: zod
     .array(
       zod.object({
@@ -662,6 +663,46 @@ export const RunCommandBody = zod.object({
 
 export const RunCommandResponse = zod.object({
   message: zod.string(),
+
+  identity: zod
+    .object({
+      creatorType: zod.string().optional(),
+      audienceType: zod.string().optional(),
+      monetizationStyle: zod.string().optional(),
+      contentPersonality: zod.string().optional(),
+    })
+    .optional(),
+
+  trendAnalysis: zod
+    .object({
+      trendScore: zod.number().optional(),
+      viralityScore: zod.number().optional(),
+      monetizationScore: zod.number().optional(),
+      creatorFit: zod.string().optional(),
+      futurePrediction: zod.string().optional(),
+    })
+    .optional(),
+
+  entertainmentIntel: zod
+    .object({
+      trendingTopic: zod.string().optional(),
+      whyItsTrending: zod.string().optional(),
+      audienceEmotion: zod.string().optional(),
+      creatorOpportunity: zod.string().optional(),
+    })
+    .optional(),
+
+  socialStrategy: zod
+    .object({
+      hashtags: zod.array(zod.string()).optional(),
+      contentAngles: zod.array(zod.string()).optional(),
+      viralHooks: zod.array(zod.string()).optional(),
+      bestPlatforms: zod.array(zod.string()).optional(),
+    })
+    .optional(),
+
+  audiencePsychology: zod.array(zod.string()).optional(),
+
   sections: zod.array(
     zod.object({
       type: zod.string(),
@@ -670,6 +711,7 @@ export const RunCommandResponse = zod.object({
       items: zod.array(zod.string()).optional(),
     }),
   ),
+
   actions: zod.array(
     zod.object({
       label: zod.string(),

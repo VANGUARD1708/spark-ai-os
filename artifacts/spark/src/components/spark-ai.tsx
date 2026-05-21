@@ -1,194 +1,429 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
-import { Zap, X, Send, Sparkles, ArrowRight, Lightbulb } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+import {
+  Zap,
+  X,
+  Send,
+  Sparkles,
+  ArrowRight,
+  Brain,
+  Flame,
+  TrendingUp,
+  Compass,
+  Target,
+  Wand2,
+  Rocket,
+} from "lucide-react";
+
 import { Link } from "wouter";
 
-const PAGE_TIPS: Record<string, { tip: string; suggestions: string[] }> = {
+const PAGE_CONTEXT: Record<
+  string,
+  {
+    title: string;
+    insight: string;
+    suggestions: string[];
+  }
+> = {
   "/": {
-    tip: "Start with a trend to build momentum fastest.",
-    suggestions: ["Show me a trending niche", "Build a brand from scratch", "Generate hooks for my product"],
+    title: "Business Direction",
+    insight:
+      "Your strongest opportunities come from combining personality + trends + monetization.",
+    suggestions: [
+      "Build me a creator business",
+      "Find me a profitable niche",
+      "Generate a viral business idea",
+    ],
   },
+
   "/trending": {
-    tip: "Niches with Low difficulty + High growth are your best entry points.",
-    suggestions: ["Which niche should I pick?", "How do I validate demand?", "Build an offer around this trend"],
+    title: "Trend Intelligence",
+    insight:
+      "Fast-growing niches with low saturation are your best leverage opportunities.",
+    suggestions: [
+      "Show me a low competition niche",
+      "Find me a viral trend",
+      "Analyze this trend for me",
+    ],
   },
-  "/winning": {
-    tip: "Digital products with 99% margins are always your highest leverage plays.",
-    suggestions: ["Help me pick the best product", "How do I price my offer?", "Create a campaign for this product"],
-  },
-  "/insights": {
-    tip: "Pain-first content is outperforming desire-first by 2× right now.",
-    suggestions: ["Write me pain-first hooks", "What angle should I use?", "Build content around this signal"],
-  },
-  "/bundle": {
-    tip: "Stacking 2–3 bonuses increases perceived value by 40% without raising your price.",
-    suggestions: ["Optimize my bundle", "What bonuses should I add?", "Suggest a price point"],
-  },
-  "/brand-builder": {
-    tip: "Great brand names are 1–2 syllables and evoke emotion, not description.",
-    suggestions: ["Generate name ideas", "Write my brand story", "Suggest a color palette"],
-  },
-  "/digital-product": {
-    tip: "A $7 tripwire offer converts 3–5× better than going straight to a high-ticket product.",
-    suggestions: ["Build my offer stack", "Suggest bonus ideas", "What should my guarantee be?"],
-  },
+
   "/viral-hooks": {
-    tip: "Hooks that open with a specific number ('I made $3,847') outperform vague claims by 4×.",
-    suggestions: ["Write pain-first hooks", "Give me controversy hooks", "Hooks for [my niche]"],
+    title: "Attention Engineering",
+    insight:
+      "Curiosity + specificity + emotion creates the highest-performing hooks.",
+    suggestions: [
+      "Write emotional hooks",
+      "Generate controversy hooks",
+      "Hooks for my niche",
+    ],
   },
+
   "/scripts": {
-    tip: "The first 2 seconds determine everything. Lead with the conflict, not the solution.",
-    suggestions: ["Write my hook line", "Make my script shorter", "Add a stronger CTA"],
+    title: "Storytelling Engine",
+    insight:
+      "Your first 2 seconds determine whether viewers stay or scroll away.",
+    suggestions: [
+      "Write a TikTok script",
+      "Improve my CTA",
+      "Turn this idea into content",
+    ],
   },
-  "/analytics": {
-    tip: "Find your best-performing content type and create 3× more of it this week.",
-    suggestions: ["What should I make more of?", "Explain my top metric", "How do I improve CTR?"],
+
+  "/brand-builder": {
+    title: "Identity Builder",
+    insight:
+      "The strongest brands feel emotional, memorable, and instantly recognizable.",
+    suggestions: [
+      "Create my brand identity",
+      "Generate a premium brand",
+      "Build a luxury brand direction",
+    ],
   },
-  "/ab-testing": {
-    tip: "Never test more than one variable at a time — otherwise you can't know what caused the change.",
-    suggestions: ["Set up a hook test", "What should I test first?", "Analyze my test results"],
-  },
-  "/schedule": {
-    tip: "Consistent posting beats perfect posting. 5 days a week > 1 viral post.",
-    suggestions: ["Build my content schedule", "Best posting times for TikTok", "Plan my launch week"],
-  },
+
   "/campaigns": {
-    tip: "Your campaign should tell a story across 3 acts: attention, education, offer.",
-    suggestions: ["Plan my launch campaign", "Write my campaign sequence", "What channels should I use?"],
+    title: "Campaign Intelligence",
+    insight:
+      "The best campaigns educate, build trust, then transition into conversion.",
+    suggestions: [
+      "Plan my launch campaign",
+      "Generate a content funnel",
+      "Build a sales campaign",
+    ],
   },
 };
 
-const DEFAULT_TIP = {
-  tip: "SPARK works best when you give it context. Describe your niche for personalized guidance.",
-  suggestions: ["Help me pick a niche", "What should I build first?", "Review my strategy"],
+const DEFAULT_CONTEXT = {
+  title: "SPARK Intelligence",
+  insight:
+    "SPARK evolves your raw ideas into scalable creator businesses and internet brands.",
+  suggestions: [
+    "Help me build a business",
+    "Find my creator niche",
+    "What should I create?",
+  ],
 };
 
 export function SparkAI() {
-  const [open, setOpen] = useState(false);
   const [location] = useLocation();
+
+  const [open, setOpen] = useState(false);
+
   const [input, setInput] = useState("");
+
   const [pulse, setPulse] = useState(false);
+
+  const [typing, setTyping] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const pageTip = PAGE_TIPS[location] ?? DEFAULT_TIP;
+  const context = PAGE_CONTEXT[location] ?? DEFAULT_CONTEXT;
 
   useEffect(() => {
-    const t = setTimeout(() => setPulse(true), 3000);
-    const t2 = setTimeout(() => setPulse(false), 6000);
-    return () => { clearTimeout(t); clearTimeout(t2); };
+    const t1 = setTimeout(() => setPulse(true), 2500);
+
+    const t2 = setTimeout(() => setPulse(false), 5500);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [location]);
 
   useEffect(() => {
     if (open && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 100);
+      setTimeout(() => inputRef.current?.focus(), 120);
     }
   }, [open]);
 
-  const handleSuggestion = (s: string) => {
-    setInput(s);
+  const handleSuggestion = (text: string) => {
+    setInput(text);
   };
 
   const handleSubmit = () => {
     if (!input.trim()) return;
-    const encoded = encodeURIComponent(input.trim());
-    window.location.href = `/command?prompt=${encoded}`;
+
+    setTyping(true);
+
+    setTimeout(() => {
+      const encoded = encodeURIComponent(input.trim());
+
+      window.location.href = `/command?prompt=${encoded}`;
+    }, 500);
   };
 
   return (
     <>
+      {/* OVERLAY */}
+
       {open && (
         <div
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
           onClick={() => setOpen(false)}
         />
       )}
 
+      {/* AI PANEL */}
+
       {open && (
-        <div className="fixed bottom-20 right-4 z-50 w-80 rounded-2xl border border-primary/30 bg-[hsl(0_0%_7%)] shadow-2xl shadow-black/60 animate-in slide-in-from-bottom-4 duration-300">
-          <div className="flex items-center justify-between p-4 border-b border-border/40">
-            <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center">
-                <Zap className="h-3.5 w-3.5 text-primary-foreground" strokeWidth={2.5} />
+        <div className="fixed bottom-20 right-4 z-50 w-[370px] max-w-[calc(100vw-2rem)] rounded-3xl border border-primary/20 bg-[hsl(0_0%_7%)] shadow-2xl shadow-black/70 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+
+          {/* TOP HEADER */}
+
+          <div className="relative overflow-hidden border-b border-border/40">
+
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent" />
+
+            <div className="relative flex items-center justify-between p-5">
+
+              <div className="flex items-center gap-3">
+
+                <div className="h-10 w-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+                  <Zap
+                    className="h-5 w-5 text-primary-foreground"
+                    strokeWidth={2.5}
+                  />
+                </div>
+
+                <div>
+
+                  <div className="flex items-center gap-2">
+
+                    <h2 className="text-sm font-black tracking-tight">
+                      SPARK AI
+                    </h2>
+
+                    <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-primary/15 text-primary border border-primary/20">
+                      LIVE
+                    </span>
+
+                  </div>
+
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Your AI business cofounder
+                  </p>
+
+                </div>
+
               </div>
-              <div>
-                <p className="text-sm font-bold leading-none">SPARK AI</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Always on</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setOpen(false)}
-              className="h-6 w-6 flex items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
 
-          <div className="p-4 space-y-4">
-            <div className="flex items-start gap-2.5">
-              <Lightbulb className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-              <p className="text-xs text-muted-foreground leading-relaxed">{pageTip.tip}</p>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              {pageTip.suggestions.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSuggestion(s)}
-                  className="text-left text-xs px-3 py-2 rounded-lg border border-border/40 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-primary/5 transition-all"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                ref={inputRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleSubmit()}
-                placeholder="Ask SPARK anything…"
-                className="flex-1 text-xs bg-secondary/40 border border-border/40 rounded-lg px-3 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40 transition-colors"
-              />
-              <button
-                onClick={handleSubmit}
-                disabled={!input.trim()}
-                className="h-9 w-9 flex items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-40 transition-opacity shrink-0"
-              >
-                <Send className="h-3.5 w-3.5" />
-              </button>
-            </div>
-
-            <Link href="/command">
               <button
                 onClick={() => setOpen(false)}
-                className="w-full text-xs text-center text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1"
+                className="h-8 w-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
               >
-                Open full Command Center
-                <ArrowRight className="h-3 w-3" />
+                <X className="h-4 w-4" />
               </button>
-            </Link>
+
+            </div>
+
           </div>
+
+          {/* CONTENT */}
+
+          <div className="p-5 space-y-5">
+
+            {/* CONTEXT CARD */}
+
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+
+              <div className="flex items-center gap-2 mb-3">
+
+                <Brain className="h-4 w-4 text-primary" />
+
+                <span className="text-xs font-semibold tracking-wide">
+                  {context.title}
+                </span>
+
+              </div>
+
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {context.insight}
+              </p>
+
+            </div>
+
+            {/* AI INSIGHTS */}
+
+            <div className="grid grid-cols-3 gap-2">
+
+              <div className="rounded-xl border border-orange-400/20 bg-orange-400/5 p-3">
+
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Flame className="h-3.5 w-3.5 text-orange-400" />
+
+                  <span className="text-[10px] font-medium">
+                    Viral
+                  </span>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  Storytelling hooks are trending.
+                </p>
+
+              </div>
+
+              <div className="rounded-xl border border-green-400/20 bg-green-400/5 p-3">
+
+                <div className="flex items-center gap-1.5 mb-1">
+                  <TrendingUp className="h-3.5 w-3.5 text-green-400" />
+
+                  <span className="text-[10px] font-medium">
+                    Growth
+                  </span>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  Educational creators growing fastest.
+                </p>
+
+              </div>
+
+              <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-3">
+
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Target className="h-3.5 w-3.5 text-cyan-400" />
+
+                  <span className="text-[10px] font-medium">
+                    Strategy
+                  </span>
+                </div>
+
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  Build audience before monetization.
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* QUICK SUGGESTIONS */}
+
+            <div className="space-y-2">
+
+              <div className="flex items-center gap-2">
+
+                <Compass className="h-4 w-4 text-primary" />
+
+                <span className="text-xs font-semibold">
+                  Suggested Actions
+                </span>
+
+              </div>
+
+              <div className="flex flex-col gap-2">
+
+                {context.suggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestion(suggestion)}
+                    className="group text-left rounded-xl border border-border/40 bg-background/30 px-3 py-3 hover:border-primary/30 hover:bg-primary/5 transition-all"
+                  >
+
+                    <div className="flex items-center gap-2">
+
+                      <Wand2 className="h-3.5 w-3.5 text-primary shrink-0" />
+
+                      <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                        {suggestion}
+                      </span>
+
+                    </div>
+
+                  </button>
+                ))}
+
+              </div>
+
+            </div>
+
+            {/* INPUT */}
+
+            <div className="space-y-3">
+
+              <div className="relative">
+
+                <input
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && handleSubmit()
+                  }
+                  placeholder="Tell SPARK what you want to build..."
+                  className="w-full h-12 rounded-2xl border border-border/40 bg-background/40 px-4 pr-14 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/40 transition-colors"
+                />
+
+                <button
+                  onClick={handleSubmit}
+                  disabled={!input.trim() || typing}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40 transition-all"
+                >
+
+                  {typing ? (
+                    <Rocket className="h-4 w-4 animate-pulse" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+
+                </button>
+
+              </div>
+
+              <div className="flex items-center justify-between">
+
+                <p className="text-[10px] text-muted-foreground">
+                  SPARK evolves your ideas into businesses, brands, and
+                  social growth systems.
+                </p>
+
+                <Link href="/command">
+
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="text-[11px] text-primary hover:opacity-80 transition-opacity flex items-center gap-1"
+                  >
+                    Full AI
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+
+                </Link>
+
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
       )}
 
+      {/* FLOATING BUTTON */}
+
       <button
         onClick={() => setOpen(!open)}
-        className={`fixed bottom-4 right-4 z-50 flex items-center gap-2 h-10 px-4 rounded-full font-semibold text-xs text-primary-foreground shadow-lg transition-all duration-300 ${
+        className={`fixed bottom-4 right-4 z-50 h-12 px-5 rounded-full flex items-center gap-2 font-semibold text-sm shadow-2xl transition-all duration-300 ${
           open
             ? "bg-secondary text-foreground"
-            : `bg-primary hover:bg-primary/90 ${pulse ? "ring-2 ring-primary/40 ring-offset-2 ring-offset-background" : ""}`
+            : `bg-primary text-primary-foreground hover:scale-[1.03] ${
+                pulse
+                  ? "ring-4 ring-primary/30 ring-offset-4 ring-offset-background"
+                  : ""
+              }`
         }`}
       >
+
         {open ? (
-          <X className="h-4 w-4" />
+          <>
+            <X className="h-4 w-4" />
+            Close
+          </>
         ) : (
           <>
-            <Sparkles className="h-3.5 w-3.5" />
+            <Sparkles className="h-4 w-4" />
             Ask SPARK
           </>
         )}
+
       </button>
     </>
   );
