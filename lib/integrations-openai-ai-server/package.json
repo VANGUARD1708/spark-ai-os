@@ -3,15 +3,36 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./batch": "./src/batch/index.ts",
-    "./image": "./src/image/index.ts",
-    "./audio": "./src/audio/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./batch": {
+      "types": "./dist/batch/index.d.ts",
+      "default": "./dist/batch/index.js"
+    },
+    "./image": {
+      "types": "./dist/image/index.d.ts",
+      "default": "./dist/image/index.js"
+    },
+    "./audio": {
+      "types": "./dist/audio/index.d.ts",
+      "default": "./dist/audio/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc"
   },
   "dependencies": {
     "openai": "^6.27.0",
     "p-limit": "^7.3.0",
     "p-retry": "^7.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "~5.9.3"
   }
 }
