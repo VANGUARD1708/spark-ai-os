@@ -4,6 +4,10 @@ import { GenerateIdeasBody } from "@workspace/api-zod";
 import { db } from "@workspace/db";
 import { generationStatsTable } from "@workspace/db";
 
+type IdeasResponse = {
+  ideas?: unknown[];
+};
+
 export async function generateIdeasHandler(
   req: Request,
   res: Response,
@@ -42,58 +46,45 @@ export async function generateIdeasHandler(
       messages: [
         {
           role: "system",
-          content: `You are Spark — an AI commerce engine that generates highly profitable digital product ideas. You specialize in identifying trending, high-demand niches and generating specific, actionable product ideas that can be sold online.
-
-You always respond with valid JSON only. No markdown, no explanation.`,
+          content:
+            `You are Spark — an AI commerce engine that generates highly profitable digital product ideas. ` +
+            `You specialize in identifying trending, high-demand niches and generating specific, actionable product ideas that can be sold online. ` +
+            `You always respond with valid JSON only. No markdown, no explanation.`,
         },
         {
           role: "user",
-          content: `Generate ${count} specific digital product ideas for the "${niche}" niche.
-${contextLines ? `\nAdditional context:\n${contextLines}` : ""}
-
+          content:
+            `Generate ${count} specific digital product ideas for the "${niche}" niche.\n` +
+            `${contextLines ? `\nAdditional context:\n${contextLines}\n` : ""}` +
+            `
 For each idea, provide:
-- title: Catchy product name (not generic)
-- description: 1-2 sentence compelling description of the product
-- demandScore: 0-100 (how much people want this right now)
-- competitionScore: 0-100 (how saturated the market is, LOWER is better)
-- profitPotential: e.g. "$47-$197/sale", "$997+ with upsells"
-- saturationLevel: "low", "medium", or "high"
-- targetAudience: Specific person who buys this
-- problemSolved: The core pain this eliminates
-- whyItSells: 1 sentence explaining the key market insight behind this idea
+- title
+- description
+- demandScore
+- competitionScore
+- profitPotential
+- saturationLevel
+- targetAudience
+- problemSolved
+- whyItSells
 
-Respond ONLY with this JSON:
-{
-  "ideas": [
-    {
-      "title": "...",
-      "description": "...",
-      "demandScore": 85,
-      "competitionScore": 30,
-      "profitPotential": "$47-$97",
-      "saturationLevel": "low",
-      "targetAudience": "...",
-      "problemSolved": "...",
-      "whyItSells": "..."
-    }
-  ]
-}`,
+Respond ONLY with valid JSON.`,
         },
       ],
     });
 
-    const content = response.choices[0]?.message?.content ?? "{}";
+    const content = response.choices?.[0]?.message?.content ?? "{}";
 
-    let parsedIdeas: { ideas?: unknown[] } = {};
+    let parsedIdeas: IdeasResponse = { ideas: [] };
 
     try {
-      parsedIdeas = JSON.parse(content) as { ideas?: unknown[] };
+      parsedIdeas = JSON.parse(content) as IdeasResponse;
     } catch {
       const match = content.match(/\{[\s\S]*\}/);
 
-      parsedIdeas = match
-        ? (JSON.parse(match[0]) as { ideas?: unknown[] })
-        : { ideas: [] };
+      if (match?.[0]) {
+        parsedIdeas = JSON.parse(match[0]) as IdeasResponse;
+      }
     }
 
     try {
