@@ -4,19 +4,36 @@ import { GenerateIdeasBody } from "@workspace/api-zod";
 import { db } from "@workspace/db";
 import { generationStatsTable } from "@workspace/db";
 
-export async function generateIdeasHandler(req: Request, res: Response) {
+export async function generateIdeasHandler(
+  req: Request,
+  res: Response,
+): Promise<Response> {
   const parsed = GenerateIdeasBody.safeParse(req.body);
+
   if (!parsed.success) {
-    return res.status(400).json({ error: "Invalid request", details: parsed.error.issues });
+    return res.status(400).json({
+      error: "Invalid request",
+      details: parsed.error.issues,
+    });
   }
 
-  const { niche, audience = "", painPoint = "", trendMode = false, count = 3 } = parsed.data;
+  const {
+    niche,
+    audience = "",
+    painPoint = "",
+    trendMode = false,
+    count = 3,
+  } = parsed.data;
 
   const contextLines = [
     audience ? `Target audience: ${audience}` : "",
     painPoint ? `Key pain point to address: ${painPoint}` : "",
-    trendMode ? "Focus on what's currently trending and gaining momentum right now." : "",
-  ].filter(Boolean).join("\n");
+    trendMode
+      ? "Focus on what's currently trending and gaining momentum right now."
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   try {
     const response = await openai.chat.completions.create({
@@ -27,7 +44,7 @@ export async function generateIdeasHandler(req: Request, res: Response) {
           role: "system",
           content: `You are Spark — an AI commerce engine that generates highly profitable digital product ideas. You specialize in identifying trending, high-demand niches and generating specific, actionable product ideas that can be sold online.
 
-You always respond with valid JSON only. No markdown, no explanation.`
+You always respond with valid JSON only. No markdown, no explanation.`,
         },
         {
           role: "user",
@@ -60,33 +77,43 @@ Respond ONLY with this JSON:
       "whyItSells": "..."
     }
   ]
-}`
-        }
-      ]
+}`,
+        },
+      ],
     });
 
     const content = response.choices[0]?.message?.content ?? "{}";
-    let parsed_ideas;
+
+    let parsedIdeas: { ideas?: unknown[] } = {};
+
     try {
-      parsed_ideas = JSON.parse(content);
+      parsedIdeas = JSON.parse(content) as { ideas?: unknown[] };
     } catch {
       const match = content.match(/\{[\s\S]*\}/);
-      parsed_ideas = match ? JSON.parse(match[0]) : { ideas: [] };
+
+      parsedIdeas = match
+        ? (JSON.parse(match[0]) as { ideas?: unknown[] })
+        : { ideas: [] };
     }
 
     try {
       await db.insert(generationStatsTable).values({
         type: "ideas",
-        niche
+        niche,
       });
-    } catch {}
+    } catch (dbError) {
+      console.error("Stats insert failed:", dbError);
+    }
 
     return res.json({
-      ideas: parsed_ideas.ideas || [],
-      niche
+      ideas: parsedIdeas.ideas ?? [],
+      niche,
     });
   } catch (error) {
     console.error("Error generating ideas:", error);
-    return res.status(500).json({ error: "Failed to generate ideas" });
+
+    return res.status(500).json({
+      error: "Failed to generate ideas",
+    });
   }
 }
