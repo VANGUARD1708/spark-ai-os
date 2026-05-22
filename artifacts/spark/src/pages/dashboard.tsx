@@ -3,24 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 
 import {
-  ArrowRight,
   Lightbulb,
-  Video,
   Flame,
   Palette,
-  Zap,
-  TrendingUp,
   Megaphone,
-  Brain,
+  Radar,
+  Zap,
   Rocket,
   Sparkles,
-  Radar,
-  Target,
-  LineChart,
-  Send,
-  Compass,
-  CheckCircle2,
-  Circle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,15 +33,6 @@ const engines = [
     icon: Palette,
     color: "text-purple-400",
     bg: "bg-purple-400/10",
-  },
-
-  {
-    title: "TikTok Scripts",
-    desc: "Create viral short-form storytelling scripts.",
-    href: "/scripts",
-    icon: Video,
-    color: "text-pink-400",
-    bg: "bg-pink-400/10",
   },
 
   {
@@ -82,40 +63,10 @@ const engines = [
   },
 ];
 
-const missions = [
-  {
-    title: "Generate 1 idea",
-    icon: Lightbulb,
-    done: true,
-  },
-
-  {
-    title: "Create 1 viral hook",
-    icon: Flame,
-    done: false,
-  },
-
-  {
-    title: "Build 1 campaign",
-    icon: Megaphone,
-    done: false,
-  },
-
-  {
-    title: "Publish to social media",
-    icon: Send,
-    done: false,
-  },
-];
-
 export default function Dashboard() {
-  const streak = 0;
-
-  const completedMissions = missions.filter((m) => m.done).length;
-
   return (
     <Layout>
-      <div className="w-full max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="w-full max-w-7xl mx-auto space-y-8">
 
         <section className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background p-8 md:p-10">
 
@@ -177,7 +128,7 @@ export default function Dashboard() {
                   </div>
 
                   <div className="text-3xl font-black text-orange-400">
-                    {streak}
+                    0
                   </div>
 
                   <p className="text-xs text-muted-foreground mt-1">
@@ -199,6 +150,9 @@ export default function Dashboard() {
                     High
                   </div>
 
+                  <p className="text-xs text-muted-foreground mt-1">
+                    growth activity
+                  </p>
                 </CardContent>
               </Card>
 
@@ -208,52 +162,53 @@ export default function Dashboard() {
 
         </section>
 
-        <section className="grid gap-4 md:grid-cols-3">
+        <section>
 
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <Brain className="h-4 w-4 text-primary" />
-                <span className="text-sm font-semibold">
-                  SPARK Insight
-                </span>
-              </div>
+          <div className="flex items-center justify-between mb-4">
 
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Storytelling content is outperforming direct-selling content.
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Quick Actions
+              </h2>
+
+              <p className="text-sm text-muted-foreground mt-1">
+                Build faster using SPARK AI.
               </p>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card className="border-orange-400/20 bg-orange-400/5">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="h-4 w-4 text-orange-400" />
-                <span className="text-sm font-semibold">
-                  Trending Opportunity
-                </span>
-              </div>
+          </div>
 
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Faceless AI creator brands are trending strongly.
-              </p>
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
 
-          <Card className="border-green-400/20 bg-green-400/5">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <Target className="h-4 w-4 text-green-400" />
-                <span className="text-sm font-semibold">
-                  Recommended Next Step
-                </span>
-              </div>
+            {engines.map((engine) => (
+              <Link key={engine.href} href={engine.href}>
 
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Convert your strongest ideas into TikTok scripts.
-              </p>
-            </CardContent>
-          </Card>
+                <Card className="group cursor-pointer border-border/50 bg-card/50 hover:border-primary/30 transition-all duration-300">
+
+                  <CardContent className="p-5">
+
+                    <div
+                      className={`h-11 w-11 rounded-xl flex items-center justify-center mb-4 ${engine.bg}`}
+                    >
+                      <engine.icon className={`h-5 w-5 ${engine.color}`} />
+                    </div>
+
+                    <h3 className="font-semibold text-base mb-1 group-hover:text-primary transition-colors">
+                      {engine.title}
+                    </h3>
+
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {engine.desc}
+                    </p>
+
+                  </CardContent>
+
+                </Card>
+
+              </Link>
+            ))}
+
+          </div>
 
         </section>
 
