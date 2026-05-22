@@ -1,4 +1,7 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
+
+const queryClient = new QueryClient();
 
 function Home() {
   return (
@@ -13,34 +16,17 @@ function Home() {
         fontSize: "40px",
       }}
     >
-      HOME PAGE
-    </div>
-  );
-}
-
-function About() {
-  return (
-    <div
-      style={{
-        background: "black",
-        color: "cyan",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "40px",
-      }}
-    >
-      ABOUT PAGE
+      QUERY CLIENT WORKS
     </div>
   );
 }
 
 export default function App() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/about" component={About} />
-    </Switch>
+    <QueryClientProvider client={queryClient}>
+      <Switch>
+        <Route path="/" component={Home} />
+      </Switch>
+    </QueryClientProvider>
   );
 }
