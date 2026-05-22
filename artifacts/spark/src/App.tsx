@@ -1,6 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
 
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 const queryClient = new QueryClient();
 
 function Home() {
@@ -16,7 +18,7 @@ function Home() {
         fontSize: "40px",
       }}
     >
-      QUERY CLIENT WORKS
+      TOOLTIP WORKS
     </div>
   );
 }
@@ -24,9 +26,11 @@ function Home() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Switch>
-        <Route path="/" component={Home} />
-      </Switch>
+      <TooltipProvider>
+        <Switch>
+          <Route path="/" component={Home} />
+        </Switch>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }
