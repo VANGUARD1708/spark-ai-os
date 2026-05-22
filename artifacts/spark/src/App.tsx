@@ -1,4 +1,6 @@
-function App() {
+import { Route, Switch } from "wouter";
+
+function Home() {
   return (
     <div
       style={{
@@ -11,9 +13,34 @@ function App() {
         fontSize: "40px",
       }}
     >
-      SPARK IS LIVE
+      HOME PAGE
     </div>
   );
 }
 
-export default App;
+function About() {
+  return (
+    <div
+      style={{
+        background: "black",
+        color: "cyan",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "40px",
+      }}
+    >
+      ABOUT PAGE
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route path="/about" component={About} />
+    </Switch>
+  );
+}
