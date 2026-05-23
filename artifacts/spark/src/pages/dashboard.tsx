@@ -78,10 +78,6 @@ export default function Dashboard() {
     <Layout>
       <div className="w-full max-w-7xl mx-auto space-y-8">
 
-        <div className="text-white text-sm break-all">
-          {JSON.stringify(stats)}
-        </div>
-
         <section className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background p-8 md:p-10">
 
           <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
@@ -171,6 +167,56 @@ export default function Dashboard() {
               </Card>
 
             </div>
+
+          </div>
+
+        </section>
+
+        <section>
+
+          <div className="flex items-center justify-between mb-4">
+
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Quick Actions
+              </h2>
+
+              <p className="text-sm text-muted-foreground mt-1">
+                Build, create, and launch faster using SPARK AI.
+              </p>
+            </div>
+
+          </div>
+
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+
+            {engines.map((engine) => (
+              <Link key={engine.href} href={engine.href}>
+
+                <Card className="group cursor-pointer border-border/50 bg-card/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+
+                  <CardContent className="p-5">
+
+                    <div
+                      className={`h-11 w-11 rounded-xl flex items-center justify-center mb-4 ${engine.bg}`}
+                    >
+                      <engine.icon className={`h-5 w-5 ${engine.color}`} />
+                    </div>
+
+                    <h3 className="font-semibold text-base mb-1 group-hover:text-primary transition-colors">
+                      {engine.title}
+                    </h3>
+
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {engine.desc}
+                    </p>
+
+                  </CardContent>
+
+                </Card>
+
+              </Link>
+            ))}
 
           </div>
 
