@@ -20,6 +20,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StartHere } from "@/components/start-here";
 
 const engines = [
   {
@@ -77,6 +78,8 @@ export default function Dashboard() {
   return (
     <Layout>
       <div className="w-full max-w-7xl mx-auto space-y-8">
+
+        <StartHere />
 
         <section className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background p-8 md:p-10">
 

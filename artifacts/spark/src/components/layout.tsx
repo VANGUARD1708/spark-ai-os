@@ -2,6 +2,9 @@ import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { SparkAI } from "./spark-ai";
 import { useGetUsage } from "@workspace/api-client-react";
+import { GuidedTour } from "./guided-tour";
+import { PageGuide } from "./page-guide";
+import { useOnboarding } from "./onboarding-context";
 
 import {
   Zap,
@@ -351,18 +354,19 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
+  const { showTour, startTour } = useOnboarding();
 
   useEffect(() => {
     setOpen(false);
   }, [location]);
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    document.body.style.overflow = open || showTour ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open]);
+  }, [open, showTour]);
 
   const navLink = (
     href: string,
@@ -537,6 +541,13 @@ export function Layout({ children }: LayoutProps) {
       <UsageBar />
 
       <div className="px-2.5 pb-3 pt-2 border-t border-border/40 space-y-1 shrink-0">
+        <button
+          onClick={startTour}
+          className="w-full flex items-center gap-2.5 px-3 py-[8px] rounded-xl text-[13px] transition-all text-muted-foreground hover:text-primary hover:bg-primary/10"
+        >
+          <Compass className="h-[15px] w-[15px]" />
+          Take a Tour
+        </button>
 
         <Link href="/business-profile">
           <button
@@ -638,11 +649,15 @@ export function Layout({ children }: LayoutProps) {
         </header>
 
         <main className="flex-1 p-4 md:p-8 max-w-screen-2xl w-full mx-auto">
+          <div className="flex items-center justify-end mb-4">
+            <PageGuide />
+          </div>
           {children}
         </main>
       </div>
 
       <SparkAI />
+      <GuidedTour />
     </div>
   );
 }
