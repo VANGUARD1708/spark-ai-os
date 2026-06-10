@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Megaphone, Plus, Trash2, Play, Pause, Send, Clock, CheckCircle2,
-  TikTokIcon, Instagram, Twitter, Youtube, X, ChevronDown
+  Instagram, Twitter, Youtube, X, ChevronDown
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";

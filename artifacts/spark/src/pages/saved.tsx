@@ -12,11 +12,7 @@ export default function Saved() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const { data: savedIdeas, isLoading } = useGetSavedIdeas({
-    query: {
-      queryKey: getGetSavedIdeasQueryKey()
-    }
-  });
+  const { data: savedIdeas, isLoading } = useGetSavedIdeas();
 
   const deleteIdea = useDeleteSavedIdea();
 

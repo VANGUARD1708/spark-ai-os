@@ -148,7 +148,7 @@ const sections: NavSection[] = [
         icon: Video,
       },
       {
-        href: "/content-planner",
+        href: "/ad-generator",
         label: "Ad Generator",
         icon: Layers,
         badge: "Advanced",

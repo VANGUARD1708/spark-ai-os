@@ -692,15 +692,15 @@ export default function Command() {
 
             actions: data.actions as Action[],
 
-            identity: data.identity,
+            identity: (data as any).identity,
 
-            trendAnalysis: data.trendAnalysis,
+            trendAnalysis: (data as any).trendAnalysis,
 
-            entertainmentIntel: data.entertainmentIntel,
+            entertainmentIntel: (data as any).entertainmentIntel,
 
-            socialStrategy: data.socialStrategy,
+            socialStrategy: (data as any).socialStrategy,
 
-            audiencePsychology: data.audiencePsychology,
+            audiencePsychology: (data as any).audiencePsychology,
           };
 
           setMessages((prev) => [

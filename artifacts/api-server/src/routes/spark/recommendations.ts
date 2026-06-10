@@ -2,9 +2,17 @@ import type { Request, Response } from "express";
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { db, generationStatsTable, savedIdeasTable, savedBundlesTable, savedScriptsTable, savedHooksTable } from "@workspace/db";
 import { sql, gte } from "drizzle-orm";
+import { getCache, setCache } from "../../lib/cache";
 
 export async function recommendationsHandler(req: Request, res: Response) {
   try {
+    // Check cache first (5-minute TTL)
+    const cacheKey = "spark-recommendations";
+    const cached = getCache<unknown>(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
     const since = new Date();
     since.setDate(since.getDate() - 30);
 
@@ -95,12 +103,16 @@ Respond ONLY with:
       data = match ? JSON.parse(match[0]) : { recommendations: [], metrics: [], insight: "" };
     }
 
-    return res.json({
+    const result = {
       insight: data.insight ?? "",
       recommendations: data.recommendations ?? [],
       metrics: data.metrics ?? [],
       generatedAt: new Date().toISOString(),
-    });
+    };
+
+    // Cache for 5 minutes
+    setCache(cacheKey, result, 5 * 60 * 1000);
+    return res.json(result);
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return res.status(500).json({ error: "Failed to generate recommendations" });

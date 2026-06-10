@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "EBghfknOizwW57D1w7zwg"
+uri = "file://artifacts/spark/public/icons/icon-512x512.png"
+type = "image"
+title = "spark app icon 512"

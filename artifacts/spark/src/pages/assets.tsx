@@ -1,11 +1,11 @@
 import { Layout } from "@/components/layout";
 import {
-  useGetAssets, getGetAssetsQueryKey,
-  useGetSavedIdeas, getGetSavedIdeasQueryKey, useDeleteSavedIdea,
-  useGetSavedBundles, getGetSavedBundlesQueryKey, useDeleteSavedBundle,
-  useGetSavedScripts, getGetSavedScriptsQueryKey, useDeleteSavedScript,
-  useGetSavedHooks, getGetSavedHooksQueryKey, useDeleteSavedHook,
-  useGetSavedBrands, getGetSavedBrandsQueryKey, useDeleteSavedBrand,
+  useGetAssets,
+  useGetSavedIdeas, useDeleteSavedIdea,
+  useGetSavedBundles, useDeleteSavedBundle,
+  useGetSavedScripts, useDeleteSavedScript,
+  useGetSavedHooks, useDeleteSavedHook,
+  useGetSavedBrands, useDeleteSavedBrand,
 } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -68,13 +68,13 @@ export default function Assets() {
   const [tab, setTab] = useState<Tab>((params.get("tab") as Tab) ?? "ideas");
   const [search, setSearch] = useState("");
 
-  const { data: assets } = useGetAssets({ query: { queryKey: getGetAssetsQueryKey() } });
+  const { data: assets } = useGetAssets();
 
-  const { data: ideas, isLoading: ideasLoading } = useGetSavedIdeas({ query: { queryKey: getGetSavedIdeasQueryKey() } });
-  const { data: bundles, isLoading: bundlesLoading } = useGetSavedBundles({ query: { queryKey: getGetSavedBundlesQueryKey() } });
-  const { data: scripts, isLoading: scriptsLoading } = useGetSavedScripts({ query: { queryKey: getGetSavedScriptsQueryKey() } });
-  const { data: hooks, isLoading: hooksLoading } = useGetSavedHooks({ query: { queryKey: getGetSavedHooksQueryKey() } });
-  const { data: brands, isLoading: brandsLoading } = useGetSavedBrands({ query: { queryKey: getGetSavedBrandsQueryKey() } });
+  const { data: ideas, isLoading: ideasLoading } = useGetSavedIdeas();
+  const { data: bundles, isLoading: bundlesLoading } = useGetSavedBundles();
+  const { data: scripts, isLoading: scriptsLoading } = useGetSavedScripts();
+  const { data: hooks, isLoading: hooksLoading } = useGetSavedHooks();
+  const { data: brands, isLoading: brandsLoading } = useGetSavedBrands();
 
   const deleteIdea = useDeleteSavedIdea();
   const deleteBundle = useDeleteSavedBundle();
@@ -91,19 +91,19 @@ export default function Assets() {
   };
 
   const del = (type: Tab, id: number) => {
-    const qkMap: Record<Tab, unknown[]> = {
-      ideas: getGetSavedIdeasQueryKey(),
-      bundles: getGetSavedBundlesQueryKey(),
-      scripts: getGetSavedScriptsQueryKey(),
-      hooks: getGetSavedHooksQueryKey(),
-      brands: getGetSavedBrandsQueryKey(),
+    const qkMap: Record<Tab, string[]> = {
+      ideas: ["/api/spark/saved-ideas"],
+      bundles: ["/api/spark/saved-bundles"],
+      scripts: ["/api/spark/saved-scripts"],
+      hooks: ["/api/spark/saved-hooks"],
+      brands: ["/api/spark/saved-brands"],
     };
     const mutMap: Record<Tab, (id: number) => void> = {
-      ideas: (id) => deleteIdea.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.ideas as any }); queryClient.invalidateQueries({ queryKey: getGetAssetsQueryKey() }); } }),
-      bundles: (id) => deleteBundle.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.bundles as any }); queryClient.invalidateQueries({ queryKey: getGetAssetsQueryKey() }); } }),
-      scripts: (id) => deleteScript.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.scripts as any }); queryClient.invalidateQueries({ queryKey: getGetAssetsQueryKey() }); } }),
-      hooks: (id) => deleteHook.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.hooks as any }); queryClient.invalidateQueries({ queryKey: getGetAssetsQueryKey() }); } }),
-      brands: (id) => deleteBrand.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.brands as any }); queryClient.invalidateQueries({ queryKey: getGetAssetsQueryKey() }); } }),
+      ideas: (id) => deleteIdea.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.ideas }); queryClient.invalidateQueries({ queryKey: ["/api/spark/assets"] }); } }),
+      bundles: (id) => deleteBundle.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.bundles }); queryClient.invalidateQueries({ queryKey: ["/api/spark/assets"] }); } }),
+      scripts: (id) => deleteScript.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.scripts }); queryClient.invalidateQueries({ queryKey: ["/api/spark/assets"] }); } }),
+      hooks: (id) => deleteHook.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.hooks }); queryClient.invalidateQueries({ queryKey: ["/api/spark/assets"] }); } }),
+      brands: (id) => deleteBrand.mutate({ id }, { onSuccess: () => { toast({ title: "Removed" }); queryClient.invalidateQueries({ queryKey: qkMap.brands }); queryClient.invalidateQueries({ queryKey: ["/api/spark/assets"] }); } }),
     };
     mutMap[type](id);
   };

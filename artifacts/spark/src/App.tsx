@@ -18,6 +18,23 @@ import Command from "@/pages/command";
 import BusinessProfile from "@/pages/business-profile";
 import Pricing from "@/pages/pricing";
 import Settings from "@/pages/settings";
+import Insights from "@/pages/insights";
+import Storefronts from "@/pages/storefronts";
+import ContentPlanner from "@/pages/content-planner";
+import Performance from "@/pages/performance";
+import Compose from "@/pages/compose";
+import Schedule from "@/pages/schedule";
+import Distribute from "@/pages/distribute";
+import ABTesting from "@/pages/ab-testing";
+import Orders from "@/pages/orders";
+import Assets from "@/pages/assets";
+import Files from "@/pages/files";
+import Agents from "@/pages/agents";
+import CreatorDNA from "@/pages/creator-dna";
+import AudienceMap from "@/pages/audience-map";
+import AttentionMap from "@/pages/attention-map";
+import GrowthEvolution from "@/pages/growth-evolution";
+import AdGenerator from "@/pages/ad-generator";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -53,6 +70,23 @@ export default function App() {
             <Route path="/business-profile" component={BusinessProfile} />
             <Route path="/pricing" component={Pricing} />
             <Route path="/settings" component={Settings} />
+            <Route path="/insights" component={Insights} />
+            <Route path="/storefronts" component={Storefronts} />
+            <Route path="/content-planner" component={ContentPlanner} />
+            <Route path="/performance" component={Performance} />
+            <Route path="/compose" component={Compose} />
+            <Route path="/schedule" component={Schedule} />
+            <Route path="/distribute" component={Distribute} />
+            <Route path="/ab-testing" component={ABTesting} />
+            <Route path="/orders" component={Orders} />
+            <Route path="/assets" component={Assets} />
+            <Route path="/files" component={Files} />
+            <Route path="/agents" component={Agents} />
+            <Route path="/creator-dna" component={CreatorDNA} />
+            <Route path="/audience-map" component={AudienceMap} />
+            <Route path="/attention-map" component={AttentionMap} />
+            <Route path="/growth-evolution" component={GrowthEvolution} />
+            <Route path="/ad-generator" component={AdGenerator} />
             <Route component={NotFound} />
           </Switch>
         </Router>

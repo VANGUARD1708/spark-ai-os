@@ -195,7 +195,7 @@ export const useCritiqueIdea = () =>
       demandScore?: number;
       competitionScore?: number;
     }) =>
-      customFetch<IdeaCritique>("/api/spark/critique", {
+      customFetch<IdeaCritique>("/api/spark/critique-idea", {
         method: "POST",
         body: JSON.stringify(data),
       }),
