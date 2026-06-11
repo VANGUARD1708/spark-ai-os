@@ -1,8 +1,109 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "EBghfknOizwW57D1w7zwg"
 uri = "file://artifacts/spark/public/icons/icon-512x512.png"
 type = "image"
 title = "spark app icon 512"
+
+[[generated]]
+id = "cmjigyWh3Dy0egE0RkjvP"
+uri = "file://playstore/feature-graphic.png"
+type = "image"
+title = "play store feature graphic"
+
+[[generated]]
+id = "Q4X4SerlpCW7Glg8kWxSg"
+uri = "file://playstore/playstore-icon.png"
+type = "image"
+title = "play store icon"
+
+[[generated]]
+id = "JgMmkKt_eIzK_6ZA0F0EG"
+uri = "file://playstore/screenshot-phone-1.png"
+type = "image"
+title = "phone screenshot 1"
+
+[[generated]]
+id = "stO6NofhW0YjXxe3h9mO0"
+uri = "file://playstore/screenshot-phone-2.png"
+type = "image"
+title = "phone screenshot 2"
+
+[[generated]]
+id = "G3q6yunPyXCS-W2C0X_oF"
+uri = "file://playstore/screenshot-tablet-1.png"
+type = "image"
+title = "tablet screenshot 1"
+
+[[outputs]]
+id = "2M40LxwhclngUDP7m7MNb"
+uri = "file://playstore-submission/README-PLAYSTORE.md"
+type = "text"
+title = "Play Store Submission Guide"
+
+[[outputs]]
+id = "_mRoThDyLsfuNUbdvrshs"
+uri = "file://playstore-submission/feature-graphic.png"
+type = "image"
+title = "Play Store Feature Graphic (1024x500)"
+
+[[outputs]]
+id = "n_SbVRtnLWepYCPMhOiF8"
+uri = "file://playstore-submission/playstore-icon.png"
+type = "image"
+title = "Play Store App Icon (512x512)"
+
+[[outputs]]
+id = "-vTl-K2xOlZKfoUOlA52F"
+uri = "file://playstore-submission/screenshot-phone-1.png"
+type = "image"
+title = "Phone Screenshot 1"
+
+[[outputs]]
+id = "HMm2i4kht5ZzUMHXr2xBt"
+uri = "file://playstore-submission/screenshot-phone-2.png"
+type = "image"
+title = "Phone Screenshot 2"
+
+[[outputs]]
+id = "wvsCgbUFFhCAxqsoCDtLW"
+uri = "file://playstore-submission/screenshot-tablet-1.png"
+type = "image"
+title = "Tablet Screenshot 1"
+
+[[outputs]]
+id = "TdONJD_DbzJI96asBG5cl"
+uri = "file://playstore-submission/dashboard-desktop.jpg"
+type = "image"
+title = "Real Dashboard Screenshot"
+
+[[outputs]]
+id = "A6JX7D4IkMv8GL30_HJsU"
+uri = "file://playstore-submission/dashboard-mobile.jpg"
+type = "image"
+title = "Real Mobile Screenshot"
+
+[[outputs]]
+id = "JEMXpe5-bT9I7OBKLJtO_"
+uri = "file://playstore-submission/trending.jpg"
+type = "image"
+title = "Real Trending Page"
+
+[[outputs]]
+id = "t0nRqyjQz6RJ7CnbFDpwo"
+uri = "file://playstore-submission/ad-generator.jpg"
+type = "image"
+title = "Real Ad Generator Page"
+
+[[outputs]]
+id = "XrNsmpn-uJ0yeeWpICgqW"
+uri = "file://playstore-submission/pricing.jpg"
+type = "image"
+title = "Real Pricing Page"
+
+[[outputs]]
+id = "_9vVlOScIQSZVM6Bp-n0S"
+uri = "file://playstore-submission/command-center.jpg"
+type = "image"
+title = "Real Command Center"
