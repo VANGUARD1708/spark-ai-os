@@ -2,6 +2,12 @@
 
 Your app is live at: **https://spark-commerce-os--johnjunel1708.replit.app**
 
+## Package Name
+
+**`com.spark.businessos`**
+
+Use this exact package name when PWA Builder / Bubblewrap asks for it. It cannot be changed after your first upload.
+
 ## Step 1: Generate Android Package (.aab)
 
 ### Option A: Use PWA Builder (Easiest — 2 minutes)
