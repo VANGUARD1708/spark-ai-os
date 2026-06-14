@@ -17,6 +17,8 @@ import Analytics from "@/pages/analytics";
 import Command from "@/pages/command";
 import BusinessProfile from "@/pages/business-profile";
 import Pricing from "@/pages/pricing";
+import SignUp from "@/pages/sign-up";
+import SuccessPage from "@/pages/success"; // NEW
 import Settings from "@/pages/settings";
 import Insights from "@/pages/insights";
 import Storefronts from "@/pages/storefronts";
@@ -41,7 +43,8 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 3,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 15000),
+      retryDelay: (attemptIndex) =>
+        Math.min(1000 * 2 ** attemptIndex, 15000),
       staleTime: 1000 * 60 * 5,
       refetchOnWindowFocus: false,
     },
@@ -69,6 +72,13 @@ export default function App() {
             <Route path="/command" component={Command} />
             <Route path="/business-profile" component={BusinessProfile} />
             <Route path="/pricing" component={Pricing} />
+
+            {/* SIGN-UP */}
+            <Route path="/sign-up" component={SignUp} />
+
+            {/* STRIPE SUCCESS PAGE */}
+            <Route path="/success" component={SuccessPage} />
+
             <Route path="/settings" component={Settings} />
             <Route path="/insights" component={Insights} />
             <Route path="/storefronts" component={Storefronts} />
@@ -87,6 +97,7 @@ export default function App() {
             <Route path="/attention-map" component={AttentionMap} />
             <Route path="/growth-evolution" component={GrowthEvolution} />
             <Route path="/ad-generator" component={AdGenerator} />
+
             <Route component={NotFound} />
           </Switch>
         </Router>
